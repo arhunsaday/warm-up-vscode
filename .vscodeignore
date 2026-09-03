@@ -1,0 +1,23 @@
+.gitignore
+.vscodeignore
+# Everything that is not needed at runtime. The extension ships as two bundles
+# (dist/extension.cjs and dist/webview/*) plus the assets they reference.
+.github/**
+.vscode/**
+.vscode-test/**
+.vscode-test.mjs
+coverage/**
+node_modules/**
+scripts/**
+shared/**
+src/**
+webview/**
+dist/test/**
+dist/**/*.map
+*.config.ts
+biome.json
+tsconfig.json
+pnpm-lock.yaml
+demo.gif
+CONTRIBUTING.md
+**/*.test.ts

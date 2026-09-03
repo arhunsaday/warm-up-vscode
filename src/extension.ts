@@ -1,61 +1,47 @@
-// This script will be run within VS Code
-// It can access the main VS Code APIs directly
-import {
-  Uri,
-  WebviewPanel,
-  StatusBarItem,
-  ExtensionContext,
-  StatusBarAlignment,
-  window,
-} from "vscode";
+import type { ExtensionContext, WebviewPanel } from "vscode";
+import { window } from "vscode";
+import { registerCommands } from "./commands";
+import { migrateLegacySettings } from "./config";
+import { WarmUpPanel } from "./panel";
+import { registerStatusBar } from "./statusBar";
+import { ResultStore } from "./storage";
 
-import WarmupWebview from "./modules/panel";
-import registerCommands from "./modules/commands";
+export async function activate(context: ExtensionContext): Promise<void> {
+  const store = new ResultStore(context.globalState);
+  context.subscriptions.push(store);
 
-// Init status bar icon
-let startButton: StatusBarItem;
+  await migrateSettingsOnce(store);
 
-// Function called after activation event
-export function activate(context: ExtensionContext) {
-  // Fetch data from json file
-  const fs = require("fs");
-  const rawdata = fs.readFileSync(
-    `${context.extensionPath}/webview/data.json`,
-    "utf8"
-  );
-  const data = JSON.parse(rawdata);
-  const words = data.words;
-  const codes = data.codes;
+  registerStatusBar(context, store);
+  registerCommands(context, store);
 
-  // Add status bar icon
-  startButton = window.createStatusBarItem(StatusBarAlignment.Left, 1);
-  startButton.command = "warmUp.start";
-  startButton.tooltip = "Start typing test";
-  startButton.text = `$(record-keys) Warm Up`;
-
-  context.subscriptions.push(startButton);
-  startButton.show();
-
-  // Register all the commands
-  registerCommands(WarmupWebview, context, words, codes);
-
-  // Register webview panel serializer
-  if (window.registerWebviewPanelSerializer) {
-    // Make sure we register a serializer in activation event
-    window.registerWebviewPanelSerializer(WarmupWebview.viewType, {
-      async deserializeWebviewPanel(webviewPanel: WebviewPanel, state: any) {
-        // Reset the webview options so we use latest uri for `localResourceRoots`.
-        webviewPanel.webview.options = {
-          enableScripts: true,
-          localResourceRoots: [Uri.joinPath(context.extensionUri, "webview")],
-        };
-        WarmupWebview.revive(webviewPanel, context.extensionUri);
-
-        // Send config
-        if (WarmupWebview.currentPanel) {
-          WarmupWebview.currentPanel.sendStartAndConfig(words, codes);
-        }
+  context.subscriptions.push(
+    window.registerWebviewPanelSerializer(WarmUpPanel.viewType, {
+      async deserializeWebviewPanel(panel: WebviewPanel) {
+        WarmUpPanel.revive(panel, context.extensionUri, store);
       },
-    });
+    }),
+  );
+}
+
+export function deactivate(): void {
+  // Everything is registered through `context.subscriptions`.
+}
+
+/** Carries v1 preferences over to the v2 setting names, exactly once. */
+async function migrateSettingsOnce(store: ResultStore): Promise<void> {
+  if (store.hasMigrated()) {
+    return;
+  }
+
+  try {
+    const migrated = await migrateLegacySettings();
+    if (migrated.length > 0) {
+      void window.setStatusBarMessage("Warm Up: settings migrated to the new format.", 4000);
+    }
+  } catch (error) {
+    console.error("Warm Up: failed to migrate legacy settings", error);
+  } finally {
+    await store.markMigrated();
   }
 }

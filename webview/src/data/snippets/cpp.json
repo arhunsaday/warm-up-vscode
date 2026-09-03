@@ -1,0 +1,8 @@
+[
+  "int main()\n{\n    srand(time(0));\n    int n = 1 + (rand() % 10);\n    int g;\n    std::cout << \"I'm thinking of a number between 1 and 10.\\nTryguess it! \";\n    while(true)\n    {\n        std::cin >> g;\n        if (g == n)\n            break;\n        else\n            std::cout << \"That's not my number.Try another guess!\n    }\n    std::cout << \"You've guessed my number!\";\n    return 0;\n}",
+  "int main () {\n  std::cout << \"Hello world!\" << std::endl;\n}",
+  "int main()\n{\n  int* p;\n\n  p = new int;\n  delete p;\n\n  p = new int(2);\n  delete p;\n\n  std::string* p2\n\n  p2 = new std::string;\n  delete p2;\n\n  p = new int[10];\n  delete[] p;\n\n  p2 = new std::string[10];\n  delete[] p2;\n}",
+  "using namespace std;\n\nbool odd()\n{\n  function<void ()> prev = []{};\n  while(true) {\n    int c = cin.get();\n    if (!isalpha(c)) {\n      prev();\n      cout.put(c);\n      return c != '.';\n    }\n    prev = [=] { cout.put(c); prev();  };\n  }\n}\n\nbool even()\n{\n  while(true) {\n    int c;\n    cout.put(c = cin.get());\n    if (!isalpha(c)) return c != '.';\n  }\n}\n\nint main()\n{\n  bool e = false;\n  while( e ? odd() : even() ) e = !e;\n  return 0;\n}",
+  "bool is_palindrome(std::string const& s)\n{\n  return std::equal(s.begin(), s.end(), s.rbegin());\n}",
+  "int main( ) {\n   std::string original( \"Mary had a X lamb.\" ) , toBeReplaced( \"X\" ) ,\n      replacement ( \"little\" ) ;\n   std::string newString = original.replace( original.find( \"X\" ) ,\n   toBeReplaced.length( ) , replacement ) ;\n   std::cout << \"String after replacement: \" << newString << \" \\n\" ;\n   return 0 ;\n}"
+]

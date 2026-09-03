@@ -1,231 +1,331 @@
 {
-	"name": "warm-up-typing-test",
-	"displayName": "Warm Up - Typing test",
-	"publisher": "Jeusto",
-	"description": "🔥👨‍💻 Improve your typing speed by practicing right inside your code editor. Practice with simple words or code snippets.",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Jeusto/vscode-typing-test"
-	},
-	"icon": "icon.png",
-	"version": "1.1.0",
-	"license": "GPL 3.0",
-	"keywords": [
-		"arhun saday",
-		"jeusto",
-		"warm up",
-		"warmup",
-		"typing",
-		"typing speed",
-		"improve typing",
-		"keyboard",
-		"practice typing",
-		"typing-test",
-		"practice",
-		"typing"
-	],
-	"engines": {
-		"vscode": "^1.47.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onCommand:warmUp.start",
-		"onWebviewPanel:warmUp",
-		"onStartupFinished"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"configuration": [
-			{
-				"title": "Warm Up: Typing test",
-				"properties": {
-					"warmUp.switchNaturalLanguage": {
-						"type": "string",
-						"enum": [
-							"english",
-							"italian",
-							"german",
-							"spanish",
-							"chinese",
-							"korean",
-							"polish",
-							"punjabi",
-							"swedish",
-							"french",
-							"portuguese",
-							"russian",
-							"finnish",
-							"turkish",
-							"englishTop1000"
-						],
-						"default": "english",
-						"description": "Choose a natural language to practice with.",
-						"scope": "window"
-					}
-				}
-			},
-			{
-				"title": "Warm Up: Typing test",
-				"properties": {
-					"warmUp.switchProgrammingLanguage": {
-						"type": "string",
-						"enum": [
-							"javascript",
-							"python",
-							"java",
-							"csharp",
-							"php",
-							"typescript",
-							"cpp",
-							"c",
-							"go",
-							"kotlin",
-							"ruby",
-							"rust"
-						],
-						"default": "javascript",
-						"description": "Choose a specific programming language to practice with.",
-						"scope": "window"
-					}
-				}
-			},
-			{
-				"title": "Warm Up: Typing test",
-				"properties": {
-					"warmUp.changeTypingMode": {
-						"type": "string",
-						"enum": [
-							"words (fixed amount)",
-							"words (against the clock)",
-							"code snippets"
-						],
-						"default": "words (fixed amount)",
-						"description": "Practice with a fixed amount of words, against the clock or with code snippets.",
-						"scope": "window"
-					}
-				}
-			},
-			{
-				"title": "Warm Up: Typing test",
-				"properties": {
-					"warmUp.togglePunctuation": {
-						"type": "string",
-						"enum": [
-							"true",
-							"false"
-						],
-						"default": "false",
-						"description": "Enable or disable punctuation (doesn't affect \"code snippets\" mode)",
-						"scope": "window"
-					}
-				}
-			},
-			{
-				"title": "Warm Up: Typing test",
-				"properties": {
-					"warmUp.changeCount": {
-						"type": "string",
-						"enum": [
-							"15",
-							"30",
-							"60",
-							"120",
-							"240"
-						],
-						"default": "15",
-						"description": "Change the amount of words or the clock timer (doesn't concern \"code snippets\" mode).",
-						"scope": "window"
-					}
-				}
-			},
-			{
-				"title": "Warm Up: Typing test",
-				"properties": {
-					"warmUp.toggleColorBlindMode": {
-						"type": "string",
-						"enum": [
-							"true",
-							"false"
-						],
-						"default": "false",
-						"description": "Enable or disable color bind mode (doesn't concern \"code snippets\" mode)",
-						"scope": "window"
-					}
-				}
-			}
-		],
-		"commands": [
-			{
-				"command": "warmUp.start",
-				"title": "Start typing test",
-				"category": "Warm Up"
-			},
-			{
-				"command": "warmUp.switchNaturalLanguage",
-				"title": "Switch natural language",
-				"category": "Warm Up"
-			},
-			{
-				"command": "warmUp.switchProgrammingLanguage",
-				"title": "Switch programming language",
-				"category": "Warm Up"
-			},
-			{
-				"command": "warmUp.changeTypingMode",
-				"title": "Change typing mode",
-				"category": "Warm Up"
-			},
-			{
-				"command": "warmUp.changeCount",
-				"title": "Change word/time count",
-				"category": "Warm Up"
-			},
-			{
-				"command": "warmUp.togglePunctuation",
-				"title": "Toggle punctuation",
-				"category": "Warm Up"
-			},
-			{
-				"command": "warmUp.toggleColorBlindMode",
-				"title": "Toggle color blind mode",
-				"category": "Warm Up"
-			},
-			{
-				"command": "warmUp.practiceWithSelection",
-				"title": "Practice with selected code snippet",
-				"category": "Warm Up"
-			}
-		],
-		"keybindings": [
-			{
-				"command": "warmUp.start",
-				"key": "ctrl+alt+p",
-				"mac": "cmd+alt+p",
-				"when": ""
-			},
-			{
-				"command": "warmUp.practiceWithSelection",
-				"key": "ctrl+alt+s",
-				"mac": "cmd+alt+s",
-				"when": "editorHasSelection"
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"lint": "eslint . --ext .ts,.tsx",
-		"watch": "tsc -w -p ./"
-	},
-	"devDependencies": {
-		"@types/node": "^12.12.0",
-		"@types/vscode": "^1.47.0",
-		"@types/vscode-webview": "^1.57.0",
-		"@typescript-eslint/eslint-plugin": "^4.16.0",
-		"@typescript-eslint/parser": "^4.16.0",
-		"eslint": "^7.21.0",
-		"typescript": "^4.3.5"
-	}
+  "name": "warm-up-typing-test",
+  "displayName": "Warm Up — Typing Test",
+  "publisher": "Jeusto",
+  "description": "🔥 Practice and improve your typing speed without leaving VS Code. Words, timed runs and real code snippets, with live WPM, sounds and personal bests.",
+  "version": "2.0.0",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "icon": "assets/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jeusto/warm-up-vscode.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Jeusto/warm-up-vscode/issues"
+  },
+  "homepage": "https://github.com/Jeusto/warm-up-vscode#readme",
+  "engines": {
+    "vscode": "^1.90.0",
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@9.15.4",
+  "categories": ["Other", "Education"],
+  "keywords": [
+    "typing",
+    "typing test",
+    "typing speed",
+    "wpm",
+    "monkeytype",
+    "practice",
+    "keyboard"
+  ],
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "main": "./dist/extension.cjs",
+  "activationEvents": ["onStartupFinished", "onWebviewPanel:warmUp"],
+  "contributes": {
+    "configuration": {
+      "title": "Warm Up",
+      "properties": {
+        "warmUp.mode": {
+          "type": "string",
+          "enum": ["words", "time", "code"],
+          "enumDescriptions": [
+            "Type a fixed number of words.",
+            "Type as many words as you can before the clock runs out.",
+            "Type a real code snippet, with syntax highlighting."
+          ],
+          "default": "words",
+          "description": "Typing mode.",
+          "scope": "application"
+        },
+        "warmUp.count": {
+          "type": "number",
+          "enum": [10, 15, 25, 30, 50, 60, 100, 120, 240],
+          "default": 25,
+          "description": "Number of words (words mode) or seconds on the clock (time mode).",
+          "scope": "application"
+        },
+        "warmUp.language": {
+          "type": "string",
+          "enum": [
+            "english",
+            "englishTop1000",
+            "chinese",
+            "finnish",
+            "french",
+            "german",
+            "italian",
+            "korean",
+            "polish",
+            "portuguese",
+            "russian",
+            "spanish",
+            "swedish",
+            "turkish"
+          ],
+          "default": "english",
+          "description": "Natural language used in words and time modes.",
+          "scope": "application"
+        },
+        "warmUp.programmingLanguage": {
+          "type": "string",
+          "enum": [
+            "javascript",
+            "typescript",
+            "python",
+            "java",
+            "csharp",
+            "cpp",
+            "c",
+            "go",
+            "kotlin",
+            "php",
+            "ruby",
+            "rust"
+          ],
+          "default": "javascript",
+          "description": "Programming language used in code mode.",
+          "scope": "application"
+        },
+        "warmUp.punctuation": {
+          "type": "boolean",
+          "default": false,
+          "description": "Sprinkle punctuation into the generated words.",
+          "scope": "application"
+        },
+        "warmUp.numbers": {
+          "type": "boolean",
+          "default": false,
+          "description": "Sprinkle numbers into the generated words.",
+          "scope": "application"
+        },
+        "warmUp.stopOnError": {
+          "type": "string",
+          "enum": ["off", "letter", "word"],
+          "enumDescriptions": [
+            "Never block: mistakes are recorded and you keep going.",
+            "Block until the mistyped letter is corrected.",
+            "Block the space key until the current word is correct."
+          ],
+          "default": "off",
+          "description": "What happens when you mistype.",
+          "scope": "application"
+        },
+        "warmUp.sound": {
+          "type": "string",
+          "enum": ["off", "click", "typewriter", "beep"],
+          "default": "off",
+          "description": "Sound played on each keypress.",
+          "scope": "application"
+        },
+        "warmUp.errorSound": {
+          "type": "boolean",
+          "default": true,
+          "description": "Play a distinct sound when you mistype (requires a keypress sound other than \"off\").",
+          "scope": "application"
+        },
+        "warmUp.volume": {
+          "type": "number",
+          "default": 0.4,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Sound effect volume, between 0 and 1.",
+          "scope": "application"
+        },
+        "warmUp.caretStyle": {
+          "type": "string",
+          "enum": ["line", "block", "underline", "off"],
+          "default": "line",
+          "description": "Shape of the typing caret.",
+          "scope": "application"
+        },
+        "warmUp.smoothCaret": {
+          "type": "boolean",
+          "default": true,
+          "description": "Animate the caret between characters.",
+          "scope": "application"
+        },
+        "warmUp.liveStats": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show live WPM and accuracy while typing.",
+          "scope": "application"
+        },
+        "warmUp.fontSize": {
+          "type": "number",
+          "default": 26,
+          "minimum": 12,
+          "maximum": 64,
+          "description": "Font size of the text you type, in pixels.",
+          "scope": "application"
+        },
+        "warmUp.colorBlindMode": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use a blue/orange palette instead of green/red.",
+          "scope": "application"
+        },
+        "warmUp.quickRestart": {
+          "type": "string",
+          "enum": ["esc", "tab", "off"],
+          "default": "esc",
+          "description": "Key that restarts the test instantly. Hold Shift to keep the same text.",
+          "scope": "application"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "warmUp.start",
+        "title": "Start typing test",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.practiceWithSelection",
+        "title": "Practice with the selected code",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.practiceWithFile",
+        "title": "Practice with the current file",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.settings",
+        "title": "Change a setting",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.setMode",
+        "title": "Change typing mode",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.setCount",
+        "title": "Change word/time count",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.setLanguage",
+        "title": "Switch natural language",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.setProgrammingLanguage",
+        "title": "Switch programming language",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.togglePunctuation",
+        "title": "Toggle punctuation",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.toggleNumbers",
+        "title": "Toggle numbers",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.setSound",
+        "title": "Change keypress sound",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.setStopOnError",
+        "title": "Change stop on error behaviour",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.toggleColorBlindMode",
+        "title": "Toggle color blind mode",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.showPersonalBests",
+        "title": "Show personal bests",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.clearHistory",
+        "title": "Clear results history",
+        "category": "Warm Up"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "warmUp.practiceWithSelection",
+          "when": "editorHasSelection",
+          "group": "warmUp@1"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "warmUp.start",
+        "key": "ctrl+alt+p",
+        "mac": "cmd+alt+p"
+      },
+      {
+        "command": "warmUp.practiceWithSelection",
+        "key": "ctrl+alt+s",
+        "mac": "cmd+alt+s",
+        "when": "editorHasSelection"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node scripts/clean.mjs && pnpm run build:webview && pnpm run build:extension",
+    "build:extension": "tsup",
+    "build:webview": "vite build",
+    "dev": "pnpm run build && concurrently -n ext,web -c blue,magenta \"tsup --watch\" \"vite build --watch\"",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:extension": "pnpm run build:extension && vscode-test",
+    "package": "pnpm run build && vsce package --no-dependencies",
+    "publish:vsce": "vsce publish --no-dependencies",
+    "publish:ovsx": "ovsx publish --packagePath",
+    "vscode:prepublish": "pnpm run build",
+    "clean": "node scripts/clean.mjs",
+    "dev:webview": "vite dev --open /webview/preview.html"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.10.5",
+    "@types/prismjs": "^1.26.6",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "@types/vscode": "^1.90.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.1.0",
+    "@vscode/vsce": "^3.2.1",
+    "concurrently": "^9.1.2",
+    "ovsx": "^0.10.1",
+    "prismjs": "^1.29.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7",
+    "vitest": "^2.1.8"
+  }
 }

@@ -1,0 +1,3 @@
+[
+  "package main\n\nimport \"fmt\"\n\nfunc main() {\n    for i := 1; i <= 100; i++ {\n        switch {\n        case i%15==0:\n            fmt.Println(\"FizzBuzz\")\n        case i%3==0:\n            fmt.Println(\"Fizz\")\n        case i%5==0:\n            fmt.Println(\"Buzz\")\n        default:\n            fmt.Println(i)\n        }\n    }\n}"
+]

@@ -1,0 +1,6 @@
+[
+  "$odd = function ($prev) use ( &$odd ) {\n  $a = fgetc(STDIN);  if (!ctype_alpha($a)) {\n    $prev();\n    fwrite(STDOUT, $a);\n    return $a != '.';\n  }\n  $clos = function () use ($a , $prev) {\n    fwrite(STDOUT, $a);\n    $prev();\n  };\n  return $odd($clos);\n};\n$even = function () {\n  while (true) {\n    $c = fgetc(STDIN);\n    fwrite(STDOUT, $c);\n    if (!ctype_alpha($c)) {\n      return $c != \".\";\n    }\n  }\n};\n$prev = function(){};\n$e = false;\nwhile ($e ? $odd($prev) : $even()) {\n  $e = !$e;\n}",
+  "function fibIter($n) {\n    if ($n < 2) {\n        return $n;\n    }\n    $fibPrev = 0;\n    $fib = 1;\n    foreach (range(1, $n-1) as $i) {\n        list($fibPrev, $fib) = array($fib, $fib + $fibPrev);\n    }\n    return $fib;\n}",
+  "$str = ''; // assign an empty string to a variable\n\n// check that a string is empty\nif (empty($str)) { ... }\n\n// check that a string is not empty\nif (! empty($str)) { ... }\n\n// we could also use the following\nif ($str == '') { ... }\nif ($str != '') { ... }\n\nif (strlen($str) == 0) { ... }\nif (strlen($str) != 0) { ... }",
+  "for($i=2008; $i<2121; $i++)\n{\n  $datetime = new DateTime(\"$i-12-25 00:00:00\");\n  if ( $datetime->format(\"w\") == 0 )\n  {\n     echo \"25 Dec $i is Sunday\\n\";\n  }\n}?>"
+]

@@ -1,0 +1,15 @@
+name: Feature request
+description: Suggest an improvement, a language or a set of code snippets.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+      description: What problem would it solve for you?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Anything you have tried or seen elsewhere?

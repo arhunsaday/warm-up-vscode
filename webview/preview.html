@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Warm Up — webview preview</title>
+    <!--
+      Runs the webview in a plain browser with a stubbed VS Code API, so the UI
+      can be iterated on with hot reload instead of relaunching an extension
+      host. Query parameters override the settings, e.g.
+      `?mode=code&programmingLanguage=rust&stopOnError=letter`.
+
+      Not part of the extension build: `vite build` only takes `src/main.tsx`.
+    -->
+    <style>
+      /* A slice of VS Code's Dark+ / Light+ theme tokens. */
+      :root {
+        --vscode-editor-background: #1e1e1e;
+        --vscode-editor-foreground: #d4d4d4;
+        --vscode-foreground: #cccccc;
+        --vscode-descriptionForeground: #9d9d9d;
+        --vscode-focusBorder: #007fd4;
+        --vscode-panel-border: #3c3c3c;
+        --vscode-font-family: -apple-system, system-ui, sans-serif;
+        --vscode-font-size: 13px;
+        --vscode-editor-font-family: "SF Mono", Menlo, Consolas, monospace;
+        --vscode-charts-blue: #3794ff;
+        --vscode-charts-red: #f14c4c;
+        --vscode-charts-green: #89d185;
+        --vscode-charts-yellow: #cca700;
+        --vscode-charts-orange: #d18616;
+        --vscode-charts-purple: #b180d7;
+        --vscode-charts-foreground: #cccccc;
+        --vscode-charts-lines: #5a5a5a;
+        --vscode-button-background: #0e639c;
+        --vscode-button-foreground: #ffffff;
+        --vscode-button-hoverBackground: #1177bb;
+        --vscode-dropdown-background: #3c3c3c;
+        --vscode-dropdown-foreground: #f0f0f0;
+        --vscode-dropdown-border: #3c3c3c;
+        --vscode-editorCursor-foreground: #aeafad;
+        --vscode-errorForeground: #f48771;
+        --vscode-editorHoverWidget-background: #252526;
+      }
+      html[data-theme="light"] {
+        --vscode-editor-background: #ffffff;
+        --vscode-editor-foreground: #3b3b3b;
+        --vscode-foreground: #3b3b3b;
+        --vscode-descriptionForeground: #717171;
+        --vscode-panel-border: #e5e5e5;
+        --vscode-charts-blue: #1a85ff;
+        --vscode-charts-red: #e51400;
+        --vscode-dropdown-background: #ffffff;
+        --vscode-dropdown-foreground: #3b3b3b;
+        --vscode-dropdown-border: #cecece;
+        --vscode-editorHoverWidget-background: #f3f3f3;
+      }
+    </style>
+    <script>
+      const params = new URLSearchParams(location.search);
+      if (params.get("theme") === "light") {
+        document.documentElement.dataset.theme = "light";
+      }
+
+      const settings = {
+        mode: "words",
+        count: 25,
+        language: "english",
+        programmingLanguage: "javascript",
+        punctuation: false,
+        numbers: false,
+        stopOnError: "off",
+        sound: "off",
+        errorSound: true,
+        volume: 0.4,
+        caretStyle: "line",
+        smoothCaret: true,
+        liveStats: true,
+        fontSize: 26,
+        colorBlindMode: false,
+        quickRestart: "esc",
+      };
+
+      for (const [key, value] of params) {
+        if (!(key in settings)) continue;
+        settings[key] =
+          typeof settings[key] === "number"
+            ? Number(value)
+            : typeof settings[key] === "boolean"
+              ? value === "true" || value === "1"
+              : value;
+      }
+
+      let state;
+      let history = JSON.parse(localStorage.getItem("warmup.preview.history") || "[]");
+
+      window.acquireVsCodeApi = () => ({
+        postMessage(message) {
+          console.info("[preview] →", message);
+          if (message.type === "ready") {
+            queueMicrotask(() => {
+              window.postMessage({ type: "settings", settings }, "*");
+              window.postMessage({ type: "history", results: history }, "*");
+            });
+          }
+          if (message.type === "updateSetting") {
+            settings[message.key] = message.value;
+            queueMicrotask(() => window.postMessage({ type: "settings", settings }, "*"));
+          }
+          if (message.type === "saveResult") {
+            history = [message.result, ...history].slice(0, 100);
+            localStorage.setItem("warmup.preview.history", JSON.stringify(history));
+            queueMicrotask(() => window.postMessage({ type: "history", results: history }, "*"));
+          }
+          if (message.type === "clearHistory") {
+            history = [];
+            localStorage.removeItem("warmup.preview.history");
+            queueMicrotask(() => window.postMessage({ type: "history", results: [] }, "*"));
+          }
+        },
+        getState: () => state,
+        setState: (next) => {
+          state = next;
+        },
+      });
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./src/main.tsx"></script>
+  </body>
+</html>

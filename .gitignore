@@ -1,9 +1,8 @@
-.vscode
-.vsix
-*.map
-out
-node_modules
-webviewPanel.js.map
-webviewPanel.min.js
-extension.min.js
-extension.js.map
+node_modules/
+dist/
+out/
+*.vsix
+.vscode-test/
+coverage/
+.DS_Store
+*.log
