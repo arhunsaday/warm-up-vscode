@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@core/*": ["core/*"],
+      "@shared/*": ["shared/*"]
+    },
     "target": "ES2022",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
@@ -21,6 +26,15 @@
     "noEmit": true,
     "types": ["node", "vscode", "mocha"]
   },
-  "include": ["src", "shared", "webview/src", "scripts", "*.config.ts", ".vscode-test.mjs"],
+  "include": [
+    "src",
+    "core",
+    "shared",
+    "webview/src",
+    "website/src",
+    "scripts",
+    "*.config.ts",
+    ".vscode-test.mjs"
+  ],
   "exclude": ["node_modules", "dist", ".vscode-test"]
 }

@@ -1,11 +1,11 @@
-import { ConfigurationTarget, workspace } from "vscode";
 import {
   DEFAULT_SETTINGS,
   NATURAL_LANGUAGES,
   PROGRAMMING_LANGUAGES,
   type SettingKey,
   type WarmUpSettings,
-} from "../shared/settings";
+} from "@shared/settings";
+import { ConfigurationTarget, workspace } from "vscode";
 
 export const CONFIG_SECTION = "warmUp";
 

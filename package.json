@@ -1,8 +1,8 @@
 {
   "name": "warm-up-typing-test",
-  "displayName": "Warm Up — Typing Test",
+  "displayName": "Warm Up \u2014 Typing Test",
   "publisher": "Jeusto",
-  "description": "🔥 Practice and improve your typing speed without leaving VS Code. Words, timed runs and real code snippets, with live WPM, sounds and personal bests.",
+  "description": "\ud83d\udd25 Practice and improve your typing speed without leaving VS Code. Words, timed runs and real code snippets, with live WPM, sounds and personal bests.",
   "version": "2.0.0",
   "license": "GPL-3.0-or-later",
   "type": "module",
@@ -42,11 +42,13 @@
       "properties": {
         "warmUp.mode": {
           "type": "string",
-          "enum": ["words", "time", "code"],
+          "enum": ["words", "time", "quotes", "code", "zen"],
           "enumDescriptions": [
             "Type a fixed number of words.",
             "Type as many words as you can before the clock runs out.",
-            "Type a real code snippet, with syntax highlighting."
+            "Type a quote from a public-domain source.",
+            "Type a real code snippet, with syntax highlighting.",
+            "Type freely, with no target text."
           ],
           "default": "words",
           "description": "Typing mode.",
@@ -185,6 +187,19 @@
           "default": "esc",
           "description": "Key that restarts the test instantly. Hold Shift to keep the same text.",
           "scope": "application"
+        },
+        "warmUp.quoteLength": {
+          "type": "string",
+          "enum": ["short", "medium", "long", "any"],
+          "default": "medium",
+          "description": "How long a quote to practise with in quotes mode.",
+          "scope": "application"
+        },
+        "warmUp.codeInEditor": {
+          "type": "boolean",
+          "default": true,
+          "description": "Practise selections and files in a real editor tab, with your own theme and syntax highlighting, instead of in the Warm Up panel.",
+          "scope": "application"
         }
       }
     },
@@ -263,6 +278,46 @@
         "command": "warmUp.clearHistory",
         "title": "Clear results history",
         "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.startInEditor",
+        "title": "Type code in the editor",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.setQuoteLength",
+        "title": "Change quote length",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.toggleCodeInEditor",
+        "title": "Toggle practising code in the editor",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.editor.backspace",
+        "title": "Delete the previous character",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.editor.deleteWord",
+        "title": "Delete the previous word",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.editor.tab",
+        "title": "Skip indentation",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.editor.restart",
+        "title": "Restart the editor test",
+        "category": "Warm Up"
+      },
+      {
+        "command": "warmUp.editor.stop",
+        "title": "Stop the editor test",
+        "category": "Warm Up"
       }
     ],
     "menus": {
@@ -271,6 +326,37 @@
           "command": "warmUp.practiceWithSelection",
           "when": "editorHasSelection",
           "group": "warmUp@1"
+        },
+        {
+          "command": "warmUp.practiceWithFile",
+          "when": "!editorHasSelection",
+          "group": "warmUp@2"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "warmUp.editor.backspace",
+          "when": "false"
+        },
+        {
+          "command": "warmUp.editor.deleteWord",
+          "when": "false"
+        },
+        {
+          "command": "warmUp.editor.tab",
+          "when": "false"
+        },
+        {
+          "command": "warmUp.editor.restart",
+          "when": "false"
+        },
+        {
+          "command": "warmUp.editor.stop",
+          "when": "false"
+        },
+        {
+          "command": "warmUp.practiceWithFile",
+          "when": "editorIsOpen"
         }
       ]
     },
@@ -285,6 +371,37 @@
         "key": "ctrl+alt+s",
         "mac": "cmd+alt+s",
         "when": "editorHasSelection"
+      },
+      {
+        "command": "warmUp.startInEditor",
+        "key": "ctrl+alt+e",
+        "mac": "cmd+alt+e"
+      },
+      {
+        "command": "warmUp.editor.backspace",
+        "key": "backspace",
+        "when": "warmUp.typingInEditor && editorTextFocus"
+      },
+      {
+        "command": "warmUp.editor.deleteWord",
+        "key": "ctrl+backspace",
+        "mac": "alt+backspace",
+        "when": "warmUp.typingInEditor && editorTextFocus"
+      },
+      {
+        "command": "warmUp.editor.tab",
+        "key": "tab",
+        "when": "warmUp.typingInEditor && editorTextFocus"
+      },
+      {
+        "command": "warmUp.editor.restart",
+        "key": "escape",
+        "when": "warmUp.typingInEditor && editorTextFocus"
+      },
+      {
+        "command": "warmUp.editor.stop",
+        "key": "shift+escape",
+        "when": "warmUp.typingInEditor && editorTextFocus"
       }
     ]
   },
@@ -304,7 +421,9 @@
     "publish:ovsx": "ovsx publish --packagePath",
     "vscode:prepublish": "pnpm run build",
     "clean": "node scripts/clean.mjs",
-    "dev:webview": "vite dev --open /webview/preview.html"
+    "dev:webview": "vite dev --open /webview/preview.html",
+    "build:website": "vite build --config website/vite.config.ts",
+    "dev:website": "vite dev --config website/vite.config.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

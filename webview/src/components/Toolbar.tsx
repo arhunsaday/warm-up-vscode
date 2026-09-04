@@ -1,14 +1,15 @@
-import type { CustomText } from "../../../shared/messages";
+import { languageLabel } from "@core/data";
+import type { CustomText } from "@shared/messages";
 import {
   NATURAL_LANGUAGES,
   PROGRAMMING_LANGUAGES,
+  QUOTE_LENGTHS,
   type SettingKey,
   TIME_COUNTS,
   type TypingMode,
   WORD_COUNTS,
   type WarmUpSettings,
-} from "../../../shared/settings";
-import { languageLabel } from "../data";
+} from "@shared/settings";
 
 interface ToolbarProps {
   settings: WarmUpSettings;
@@ -22,7 +23,9 @@ interface ToolbarProps {
 const MODE_LABELS: Record<TypingMode, string> = {
   words: "words",
   time: "time",
+  quotes: "quotes",
   code: "code",
+  zen: "zen",
 };
 
 /** monkeytype-style option bar: everything reachable without leaving the panel. */
@@ -36,6 +39,8 @@ export function Toolbar({
 }: ToolbarProps) {
   const mode = custom ? "code" : settings.mode;
   const counts = mode === "time" ? TIME_COUNTS : WORD_COUNTS;
+  /** Only the generated-word modes take punctuation, numbers and a length. */
+  const generatesWords = mode === "words" || mode === "time";
 
   return (
     <div className={`toolbar${hidden ? " toolbar--hidden" : ""}`} aria-hidden={hidden}>
@@ -48,7 +53,7 @@ export function Toolbar({
         </div>
       ) : (
         <>
-          {mode !== "code" && (
+          {generatesWords && (
             <div className="toolbar__group">
               <Toggle
                 label="punctuation"
@@ -75,7 +80,7 @@ export function Toolbar({
             ))}
           </fieldset>
 
-          {mode !== "code" && (
+          {generatesWords && (
             <fieldset className="toolbar__group">
               <legend className="visually-hidden">Length</legend>
               {counts.map((value) => (
@@ -89,25 +94,41 @@ export function Toolbar({
             </fieldset>
           )}
 
-          <div className="toolbar__group">
-            {mode === "code" ? (
-              <Select
-                label="Programming language"
-                value={settings.programmingLanguage}
-                options={PROGRAMMING_LANGUAGES}
-                onChange={(value) =>
-                  onChange("programmingLanguage", value as WarmUpSettings["programmingLanguage"])
-                }
-              />
-            ) : (
-              <Select
-                label="Language"
-                value={settings.language}
-                options={NATURAL_LANGUAGES}
-                onChange={(value) => onChange("language", value as WarmUpSettings["language"])}
-              />
-            )}
-          </div>
+          {mode === "quotes" && (
+            <fieldset className="toolbar__group">
+              <legend className="visually-hidden">Quote length</legend>
+              {QUOTE_LENGTHS.map((value) => (
+                <Toggle
+                  key={value}
+                  label={value}
+                  active={settings.quoteLength === value}
+                  onClick={() => onChange("quoteLength", value)}
+                />
+              ))}
+            </fieldset>
+          )}
+
+          {mode !== "zen" && (
+            <div className="toolbar__group">
+              {mode === "code" ? (
+                <Select
+                  label="Programming language"
+                  value={settings.programmingLanguage}
+                  options={PROGRAMMING_LANGUAGES}
+                  onChange={(value) =>
+                    onChange("programmingLanguage", value as WarmUpSettings["programmingLanguage"])
+                  }
+                />
+              ) : (
+                <Select
+                  label="Language"
+                  value={settings.language}
+                  options={NATURAL_LANGUAGES}
+                  onChange={(value) => onChange("language", value as WarmUpSettings["language"])}
+                />
+              )}
+            </div>
+          )}
         </>
       )}
 

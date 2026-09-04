@@ -1,6 +1,6 @@
+import type { CodeState } from "@core/engine/code";
+import type { WarmUpSettings } from "@shared/settings";
 import { useEffect, useMemo, useRef } from "react";
-import type { WarmUpSettings } from "../../../shared/settings";
-import type { CodeState } from "../engine/code";
 import { useCaret } from "../hooks/useCaret";
 import { Caret } from "./Caret";
 

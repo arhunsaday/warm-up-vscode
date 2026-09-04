@@ -12,9 +12,9 @@ export function registerStatusBar(context: ExtensionContext, store: ResultStore)
 
   const refresh = () => {
     const [best] = store.personalBests();
-    item.text = best ? `$(record-keys) ${best.wpm} wpm` : "$(record-keys) Warm Up";
+    item.text = best ? `$(record-keys) ${best.speed} ${best.unit}` : "$(record-keys) Warm Up";
     item.tooltip = best
-      ? `Warm Up — personal best: ${best.wpm} wpm at ${best.accuracy}% accuracy. Click to start a test.`
+      ? `Warm Up — personal best: ${best.speed} ${best.unit} at ${best.accuracy}% accuracy. Click to start a test.`
       : "Warm Up — start a typing test";
   };
 

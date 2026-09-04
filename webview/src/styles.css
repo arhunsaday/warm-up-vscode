@@ -191,7 +191,9 @@ body {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  min-height: 1.8em;
+  /* Fixed, not min-height: the live figures appear on the first keystroke and
+     must not resize the bar underneath the text. */
+  height: 1.8em;
   color: var(--wu-accent);
   font-size: 1.3em;
   font-variant-numeric: tabular-nums;
@@ -233,6 +235,9 @@ body {
 
 .words-viewport {
   position: relative;
+  /* The track moves in whole lines; containing it in its own layer keeps the
+     transform off the main layout. */
+  contain: layout paint;
 }
 
 .words-track {
@@ -724,4 +729,27 @@ body {
 
 .code-track .char--missed {
   color: var(--wu-error);
+}
+
+/* ---------------------------------------------------------------------- zen */
+
+.zen-viewport {
+  min-height: 8em;
+  font-family: var(--vscode-editor-font-family, monospace);
+}
+
+.zen-track {
+  position: relative;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.zen-placeholder {
+  color: var(--wu-faint);
+}
+
+.results__quote-source {
+  margin: -8px 0 0;
+  color: var(--wu-muted);
+  font-style: italic;
 }

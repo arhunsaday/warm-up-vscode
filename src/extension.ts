@@ -2,6 +2,7 @@ import type { ExtensionContext, WebviewPanel } from "vscode";
 import { window } from "vscode";
 import { registerCommands } from "./commands";
 import { migrateLegacySettings } from "./config";
+import { registerEditorSessionProvider } from "./editorSession";
 import { WarmUpPanel } from "./panel";
 import { registerStatusBar } from "./statusBar";
 import { ResultStore } from "./storage";
@@ -12,6 +13,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
 
   await migrateSettingsOnce(store);
 
+  registerEditorSessionProvider(context);
   registerStatusBar(context, store);
   registerCommands(context, store);
 

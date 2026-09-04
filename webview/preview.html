@@ -91,7 +91,7 @@
       }
 
       let state;
-      let history = JSON.parse(localStorage.getItem("warmup.preview.history") || "[]");
+      let history = JSON.parse(localStorage.getItem("warmup.preview.history.v2") || "[]");
 
       window.acquireVsCodeApi = () => ({
         postMessage(message) {
@@ -108,12 +108,12 @@
           }
           if (message.type === "saveResult") {
             history = [message.result, ...history].slice(0, 100);
-            localStorage.setItem("warmup.preview.history", JSON.stringify(history));
+            localStorage.setItem("warmup.preview.history.v2", JSON.stringify(history));
             queueMicrotask(() => window.postMessage({ type: "history", results: history }, "*"));
           }
           if (message.type === "clearHistory") {
             history = [];
-            localStorage.removeItem("warmup.preview.history");
+            localStorage.removeItem("warmup.preview.history.v2");
             queueMicrotask(() => window.postMessage({ type: "history", results: [] }, "*"));
           }
         },

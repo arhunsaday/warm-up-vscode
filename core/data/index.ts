@@ -1,4 +1,7 @@
-import type { NaturalLanguage, ProgrammingLanguage } from "../../../shared/settings";
+import type { NaturalLanguage, ProgrammingLanguage } from "@shared/settings";
+import type { Quote } from "../engine/quotes";
+
+import englishQuotes from "./quotes/english.json";
 
 import chinese from "./words/chinese.json";
 import english from "./words/english.json";
@@ -59,6 +62,19 @@ export const SNIPPETS: Record<ProgrammingLanguage, string[]> = {
   ruby,
   rust,
 };
+
+/**
+ * Quotes are per language, but only English has a curated public-domain set so
+ * far; everything else falls back to it rather than showing an empty mode.
+ */
+export const QUOTES: Record<string, Quote[]> = {
+  english: englishQuotes,
+  englishTop1000: englishQuotes,
+};
+
+export function quotesFor(language: string): Quote[] {
+  return QUOTES[language] ?? QUOTES.english;
+}
 
 /** Display names for the language pickers. */
 export const LANGUAGE_LABELS: Record<string, string> = {

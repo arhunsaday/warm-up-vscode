@@ -38,10 +38,28 @@ monkeytype's binding.
 
 - **words** — a fixed number of words (10 / 25 / 50 / 100), in one of 14 languages.
 - **time** — type as much as you can before the clock runs out (15 / 30 / 60 / 120s).
+- **quotes** — a passage from a public-domain source, short to long.
 - **code** — a real snippet in one of 12 programming languages, syntax highlighted.
   Indentation is skipped for you; newlines are typed with <kbd>enter</kbd>.
+- **zen** — no target and no mistakes; type until you feel warmed up, then
+  <kbd>shift</kbd>+<kbd>enter</kbd> to see how you did.
 
 Turn on **punctuation** and **numbers** to make words mode harder.
+
+### Code, in a real editor
+
+**Warm Up: Type code in the editor**
+(<kbd>ctrl</kbd>/<kbd>cmd</kbd>+<kbd>alt</kbd>+<kbd>e</kbd>) opens the snippet in
+a **read-only editor tab** instead of the panel: your theme, your font, your
+syntax highlighting, and the editor's own cursor as the caret. The text starts
+dimmed and lights up as you type it correctly.
+
+Practising a selection or a file goes to the editor too, unless you turn
+`warmUp.codeInEditor` off. Code mode inside the panel is unaffected.
+
+While a run is going, <kbd>esc</kbd> restarts and <kbd>shift</kbd>+<kbd>esc</kbd>
+stops. If another extension already owns the editor's typing — a modal-editing
+extension such as Vim — Warm Up notices and falls back to the panel.
 
 ### Practice with your own code
 
@@ -57,6 +75,8 @@ Every finished test reports **WPM**, **accuracy**, **raw WPM**, **consistency**,
 character breakdown (correct / wrong / extra / missed) and a speed-over-time chart.
 
 - **WPM** counts correct characters only, five characters to a word.
+- **CPM** replaces it for Chinese and Korean, where "words" are 1–2 characters
+  and words-per-minute would under-report a fluent typist by about a third.
 - **Raw** counts every character you typed.
 - **Accuracy** is the share of keystrokes that were correct.
 - **Consistency** is how even your pace was, second to second.
@@ -72,8 +92,10 @@ or from the settings editor.
 
 | Setting | Description | Default |
 | --- | --- | --- |
-| `warmUp.mode` | `words`, `time` or `code` | `words` |
+| `warmUp.mode` | `words`, `time`, `quotes`, `code` or `zen` | `words` |
 | `warmUp.count` | Words, or seconds on the clock | `25` |
+| `warmUp.quoteLength` | `short`, `medium`, `long` or `any` | `medium` |
+| `warmUp.codeInEditor` | Practise code in a real editor tab | `true` |
 | `warmUp.language` | Natural language for words and time modes | `english` |
 | `warmUp.programmingLanguage` | Language used for code snippets | `javascript` |
 | `warmUp.punctuation` | Sprinkle punctuation into the words | `false` |
@@ -100,11 +122,22 @@ Settings from version 1 are migrated automatically the first time you run 2.0.
 - Everything is driven from a real focused input, so dead keys (the French
   <kbd>`</kbd>), AltGr combinations and IME composition all work.
 
+## Website
+
+The landing page lives in [`website/`](website) and is deployed to Vercel. It
+imports the extension's real typing engine from `core/`, so the demo on the page
+is the product rather than a recording of it.
+
+```bash
+pnpm dev:website
+```
+
 ## Contributing
 
-Word lists and code snippets are plain JSON files — adding a language is a small
-pull request. See [CONTRIBUTING.md](CONTRIBUTING.md) for the layout and the dev
-workflow, including a browser preview that runs the panel without an extension host.
+Word lists, quotes and code snippets are plain JSON files — adding a language is
+a small pull request. See [CONTRIBUTING.md](CONTRIBUTING.md) for the layout and
+the dev workflow, including a browser preview that runs the panel without an
+extension host.
 
 ## Credits
 

@@ -1,9 +1,10 @@
+import type { SpeedUnit } from "@shared/settings";
 import type { CharCounts, Keystroke } from "./types";
 
 /** One point of the per-second results chart. */
 export interface Sample {
   second: number;
-  /** Words per minute produced during that second (correct characters only). */
+  /** Speed during that second, in the test's unit (correct characters only). */
   wpm: number;
   /** Same, counting every keystroke. */
   raw: number;
@@ -11,8 +12,11 @@ export interface Sample {
 }
 
 export interface Stats {
-  wpm: number;
-  rawWpm: number;
+  /** Speed in `unit`. */
+  speed: number;
+  /** Same, counting every character typed. */
+  rawSpeed: number;
+  unit: SpeedUnit;
   /** Percentage, 0-100. */
   accuracy: number;
   /** Percentage, 0-100. Lower means a more uneven rhythm. */
@@ -21,15 +25,32 @@ export interface Stats {
 
 const CHARS_PER_WORD = 5;
 
-export function wordsPerMinute(characters: number, elapsedMs: number): number {
+/** Characters that make up one unit of speed. */
+export function charsPerUnit(unit: SpeedUnit): number {
+  return unit === "cpm" ? 1 : CHARS_PER_WORD;
+}
+
+/**
+ * The standard measure: correct characters divided by five, per minute — or,
+ * for languages counted in characters, the characters themselves.
+ */
+export function speedPerMinute(
+  characters: number,
+  elapsedMs: number,
+  unit: SpeedUnit = "wpm",
+): number {
   if (elapsedMs <= 0) {
     return 0;
   }
-  return (characters / CHARS_PER_WORD / elapsedMs) * 60_000;
+  return (characters / charsPerUnit(unit) / elapsedMs) * 60_000;
 }
 
 /** Buckets keystrokes into one sample per elapsed second. */
-export function computeSamples(keystrokes: Keystroke[], elapsedMs: number): Sample[] {
+export function computeSamples(
+  keystrokes: Keystroke[],
+  elapsedMs: number,
+  unit: SpeedUnit = "wpm",
+): Sample[] {
   const seconds = Math.max(1, Math.ceil(elapsedMs / 1000));
   const samples: Sample[] = [];
 
@@ -48,10 +69,11 @@ export function computeSamples(keystrokes: Keystroke[], elapsedMs: number): Samp
     }
   }
 
+  const divisor = charsPerUnit(unit);
   return samples.map((sample) => ({
     ...sample,
-    wpm: Math.round((sample.wpm / CHARS_PER_WORD) * 60),
-    raw: Math.round((sample.raw / CHARS_PER_WORD) * 60),
+    wpm: Math.round((sample.wpm / divisor) * 60),
+    raw: Math.round((sample.raw / divisor) * 60),
   }));
 }
 
@@ -88,13 +110,15 @@ export function computeStats(
   counts: CharCounts,
   keystrokes: Keystroke[],
   elapsedMs: number,
+  unit: SpeedUnit = "wpm",
 ): Stats {
-  const samples = computeSamples(keystrokes, elapsedMs);
+  const samples = computeSamples(keystrokes, elapsedMs, unit);
   const typed = counts.correct + counts.incorrect + counts.extra;
 
   return {
-    wpm: Math.round(wordsPerMinute(counts.correct, elapsedMs)),
-    rawWpm: Math.round(wordsPerMinute(typed, elapsedMs)),
+    unit,
+    speed: Math.round(speedPerMinute(counts.correct, elapsedMs, unit)),
+    rawSpeed: Math.round(speedPerMinute(typed, elapsedMs, unit)),
     // Floored, never rounded: a run with a mistake must not report 100%.
     accuracy: Math.floor(accuracy(keystrokes)),
     consistency: Math.round(consistency(samples)),

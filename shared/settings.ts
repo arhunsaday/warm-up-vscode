@@ -7,7 +7,7 @@
  * tests assert that both stay aligned.
  */
 
-export const TYPING_MODES = ["words", "time", "code"] as const;
+export const TYPING_MODES = ["words", "time", "quotes", "code", "zen"] as const;
 export type TypingMode = (typeof TYPING_MODES)[number];
 
 export const STOP_ON_ERROR = ["off", "letter", "word"] as const;
@@ -21,6 +21,9 @@ export type CaretStyle = (typeof CARET_STYLES)[number];
 
 export const QUICK_RESTART_KEYS = ["esc", "tab", "off"] as const;
 export type QuickRestart = (typeof QUICK_RESTART_KEYS)[number];
+
+export const QUOTE_LENGTHS = ["short", "medium", "long", "any"] as const;
+export type QuoteLength = (typeof QUOTE_LENGTHS)[number];
 
 export const COUNTS = [10, 15, 25, 30, 50, 60, 100, 120, 240] as const;
 
@@ -45,6 +48,23 @@ export const NATURAL_LANGUAGES = [
   "turkish",
 ] as const;
 export type NaturalLanguage = (typeof NATURAL_LANGUAGES)[number];
+
+/**
+ * Languages whose speed is not meaningfully expressed in "words".
+ *
+ * Words per minute is defined as correct characters / 5, a ratio calibrated on
+ * English. Chinese words in our list average 1.4 characters and Korean 2.0, so
+ * WPM would under-report a fluent typist by roughly a factor of three. The
+ * convention in those languages is characters per minute (字/分, 타/분), so that
+ * is what we report.
+ */
+export const CPM_LANGUAGES: readonly string[] = ["chinese", "korean"];
+
+export type SpeedUnit = "wpm" | "cpm";
+
+export function speedUnitFor(language: string): SpeedUnit {
+  return CPM_LANGUAGES.includes(language) ? "cpm" : "wpm";
+}
 
 export const PROGRAMMING_LANGUAGES = [
   "javascript",
@@ -79,6 +99,8 @@ export interface WarmUpSettings {
   fontSize: number;
   colorBlindMode: boolean;
   quickRestart: QuickRestart;
+  quoteLength: QuoteLength;
+  codeInEditor: boolean;
 }
 
 export const DEFAULT_SETTINGS: WarmUpSettings = {
@@ -98,6 +120,8 @@ export const DEFAULT_SETTINGS: WarmUpSettings = {
   fontSize: 26,
   colorBlindMode: false,
   quickRestart: "esc",
+  quoteLength: "medium",
+  codeInEditor: true,
 };
 
 export type SettingKey = keyof WarmUpSettings;
@@ -138,10 +162,16 @@ export const SETTING_DEFINITIONS: readonly SettingDefinition[] = [
   {
     key: "mode",
     title: "Typing mode",
-    prompt: "Type a fixed amount of words, race the clock, or type code.",
+    prompt: "Words, against the clock, a quote, code, or free typing.",
     kind: "enum",
     values: TYPING_MODES,
-    icons: { words: "book", time: "watch", code: "code" },
+    icons: {
+      words: "book",
+      time: "watch",
+      quotes: "quote",
+      code: "code",
+      zen: "sparkle",
+    },
     command: "warmUp.setMode",
   },
   {
@@ -247,6 +277,22 @@ export const SETTING_DEFINITIONS: readonly SettingDefinition[] = [
     prompt: "Use a blue/orange palette instead of green/red.",
     kind: "boolean",
     command: "warmUp.toggleColorBlindMode",
+  },
+  {
+    key: "quoteLength",
+    title: "Quote length",
+    prompt: "How long a quote to practise with.",
+    kind: "enum",
+    values: QUOTE_LENGTHS,
+    command: "warmUp.setQuoteLength",
+  },
+  {
+    key: "codeInEditor",
+    title: "Practise code in the editor",
+    prompt:
+      "Type selections and files in a real editor tab, with your own theme and syntax highlighting, instead of in the panel.",
+    kind: "boolean",
+    command: "warmUp.toggleCodeInEditor",
   },
   {
     key: "quickRestart",

@@ -1,5 +1,6 @@
+import { speedUnitFor } from "@shared/settings";
 import { describe, expect, it } from "vitest";
-import { accuracy, computeSamples, computeStats, consistency, wordsPerMinute } from "./stats";
+import { accuracy, computeSamples, computeStats, consistency, speedPerMinute } from "./stats";
 import type { Keystroke } from "./types";
 
 function keystrokes(pattern: (0 | 1)[], spacingMs = 100): Keystroke[] {
@@ -12,11 +13,15 @@ function keystrokes(pattern: (0 | 1)[], spacingMs = 100): Keystroke[] {
 describe("stats", () => {
   it("computes words per minute from correct characters", () => {
     // 60 characters = 12 words, in 60 seconds.
-    expect(wordsPerMinute(60, 60_000)).toBe(12);
+    expect(speedPerMinute(60, 60_000)).toBe(12);
   });
 
-  it("returns zero words per minute for a zero-length test", () => {
-    expect(wordsPerMinute(10, 0)).toBe(0);
+  it("counts characters per minute for languages measured that way", () => {
+    expect(speedPerMinute(60, 60_000, "cpm")).toBe(60);
+  });
+
+  it("returns zero speed for a zero-length test", () => {
+    expect(speedPerMinute(10, 0)).toBe(0);
   });
 
   it("computes accuracy from keystrokes", () => {
@@ -51,6 +56,18 @@ describe("stats", () => {
     expect(value).toBeLessThan(50);
   });
 
+  it("reports Chinese and Korean in characters per minute", () => {
+    const counts = { correct: 100, incorrect: 0, extra: 0, missed: 0 };
+    const strokes = keystrokes(Array(100).fill(1) as (0 | 1)[], 600);
+
+    const latin = computeStats(counts, strokes, 60_000, "wpm");
+    const cjk = computeStats(counts, strokes, 60_000, "cpm");
+
+    expect(latin.speed).toBe(20);
+    expect(cjk.speed).toBe(100);
+    expect(cjk.unit).toBe("cpm");
+  });
+
   it("never reports 100% accuracy when a keystroke was wrong", () => {
     const pattern = Array.from({ length: 500 }, (_, index) => (index === 0 ? 0 : 1)) as (0 | 1)[];
     const stats = computeStats(
@@ -69,9 +86,23 @@ describe("stats", () => {
       30_000,
     );
 
-    expect(stats.wpm).toBe(20);
-    expect(stats.rawWpm).toBe(22);
+    expect(stats.speed).toBe(20);
+    expect(stats.rawSpeed).toBe(22);
+    expect(stats.unit).toBe("wpm");
     expect(stats.accuracy).toBe(80);
     expect(stats.consistency).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe("speedUnitFor", () => {
+  it("uses characters per minute for Chinese and Korean", () => {
+    expect(speedUnitFor("chinese")).toBe("cpm");
+    expect(speedUnitFor("korean")).toBe("cpm");
+  });
+
+  it("uses words per minute everywhere else", () => {
+    for (const language of ["english", "french", "russian", "typescript", "selection"]) {
+      expect(speedUnitFor(language)).toBe("wpm");
+    }
   });
 });

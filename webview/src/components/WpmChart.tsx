@@ -1,8 +1,10 @@
+import type { Sample } from "@core/engine/stats";
+import type { SpeedUnit } from "@shared/settings";
 import { useEffect, useRef, useState } from "react";
-import type { Sample } from "../engine/stats";
 
 interface WpmChartProps {
   samples: Sample[];
+  unit: SpeedUnit;
 }
 
 const HEIGHT = 190;
@@ -14,7 +16,7 @@ const PADDING = { top: 14, right: 14, bottom: 24, left: 38 };
  * Colours come from VS Code's own `--vscode-charts-*` tokens so the chart is
  * legible in whatever theme the user runs.
  */
-export function WpmChart({ samples }: WpmChartProps) {
+export function WpmChart({ samples, unit }: WpmChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(640);
   const [hover, setHover] = useState<Sample | null>(null);
@@ -68,11 +70,11 @@ export function WpmChart({ samples }: WpmChartProps) {
         role="img"
         aria-label={`Speed over time: ${samples.length} seconds, peaking at ${Math.max(
           ...samples.map((sample) => sample.wpm),
-        )} words per minute.`}
+        )} ${unit === "cpm" ? "characters" : "words"} per minute.`}
         onMouseMove={onMove}
         onMouseLeave={() => setHover(null)}
       >
-        <title>Words per minute per second</title>
+        <title>{unit === "cpm" ? "Characters" : "Words"} per minute, second by second</title>
 
         {ticks.map((tick) => (
           <g key={tick}>
@@ -137,7 +139,9 @@ export function WpmChart({ samples }: WpmChartProps) {
           style={{ left: Math.min(x(hover.second) + 12, width - 130) }}
         >
           <strong>{hover.second}s</strong>
-          <span>{hover.wpm} wpm</span>
+          <span>
+            {hover.wpm} {unit}
+          </span>
           <span className="muted">{hover.raw} raw</span>
           {hover.errors > 0 && <span className="chart__tooltip-error">{hover.errors} errors</span>}
         </div>
@@ -145,7 +149,7 @@ export function WpmChart({ samples }: WpmChartProps) {
 
       <ul className="chart__legend">
         <li>
-          <span className="swatch swatch--wpm" /> wpm
+          <span className="swatch swatch--wpm" /> {unit}
         </li>
         <li>
           <span className="swatch swatch--raw" /> raw

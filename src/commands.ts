@@ -1,7 +1,10 @@
+import { SNIPPETS } from "@core/data";
+import { pickSnippet } from "@core/engine/generator";
+import { type TestResult, resultKey } from "@shared/messages";
+import { SETTING_DEFINITIONS, type SettingDefinition } from "@shared/settings";
 import { type ExtensionContext, type QuickPickItem, type Uri, commands, window } from "vscode";
-import { type TestResult, resultKey } from "../shared/messages";
-import { SETTING_DEFINITIONS, type SettingDefinition } from "../shared/settings";
 import { readSettings, writeSetting } from "./config";
+import { EditorSession } from "./editorSession";
 import { WarmUpPanel } from "./panel";
 import type { ResultStore } from "./storage";
 
@@ -21,6 +24,14 @@ export function registerCommands(context: ExtensionContext, store: ResultStore):
     practiceWithEditor(extensionUri, store, "selection"),
   );
   register("warmUp.practiceWithFile", () => practiceWithEditor(extensionUri, store, "file"));
+  register("warmUp.startInEditor", () => startSnippetInEditor(extensionUri, store));
+
+  // Reachable only while a run is in progress, through the context key.
+  register("warmUp.editor.backspace", () => EditorSession.current()?.backspace(false));
+  register("warmUp.editor.deleteWord", () => EditorSession.current()?.backspace(true));
+  register("warmUp.editor.tab", () => EditorSession.current()?.tab());
+  register("warmUp.editor.restart", () => EditorSession.current()?.restart());
+  register("warmUp.editor.stop", () => EditorSession.current()?.dispose());
 
   register("warmUp.settings", () => pickSetting());
 
@@ -76,15 +87,59 @@ async function practiceWithEditor(
     );
   }
 
-  const panel = WarmUpPanel.show(extensionUri, store);
-  panel.practiceWith({
+  const payload = {
     text: text.slice(0, MAX_CUSTOM_TEXT),
     languageId: editor.document.languageId,
     origin:
       source === "selection"
         ? "selection"
         : editor.document.uri.path.split("/").pop() || "current file",
+  };
+
+  // Code selected in the editor is most natural to retype in the editor.
+  if (readSettings().codeInEditor) {
+    const session = await EditorSession.start({
+      target: payload.text,
+      languageId: payload.languageId,
+      label: payload.origin,
+      store,
+    });
+    if (session) {
+      return;
+    }
+    void window.showInformationMessage(
+      "Warm Up: another extension owns the editor's typing, so the test opened in the panel instead.",
+    );
+  }
+
+  WarmUpPanel.show(extensionUri, store).practiceWith(payload);
+}
+
+/** Types a random snippet for the configured language, in a real editor tab. */
+async function startSnippetInEditor(extensionUri: Uri, store: ResultStore): Promise<void> {
+  const settings = readSettings();
+  const snippet = pickSnippet(SNIPPETS[settings.programmingLanguage] ?? []);
+
+  if (!snippet) {
+    void window.showWarningMessage(
+      `Warm Up: no snippets available for ${settings.programmingLanguage}.`,
+    );
+    return;
+  }
+
+  const session = await EditorSession.start({
+    target: snippet,
+    languageId: settings.programmingLanguage,
+    label: settings.programmingLanguage,
+    store,
   });
+
+  if (!session) {
+    void window.showInformationMessage(
+      "Warm Up: another extension owns the editor's typing, so the test opened in the panel instead.",
+    );
+    WarmUpPanel.show(extensionUri, store);
+  }
 }
 
 async function pickSetting(): Promise<void> {
@@ -176,7 +231,7 @@ async function showPersonalBests(store: ResultStore): Promise<void> {
 
   await window.showQuickPick(
     bests.map((best: TestResult) => ({
-      label: `$(flame) ${best.wpm} wpm`,
+      label: `$(flame) ${best.speed} ${best.unit}`,
       description: resultKey(best),
       detail: `${best.accuracy}% accuracy · ${best.consistency}% consistency · ${new Date(
         best.date,

@@ -38,8 +38,11 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
-      - name: Build
+      - name: Build extension
         run: pnpm build
+
+      - name: Build website
+        run: pnpm run build:website
 
       - name: Package
         run: pnpm exec vsce package --no-dependencies --out warm-up.vsix

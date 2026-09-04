@@ -1,4 +1,4 @@
-import type { NaturalLanguage, TypingMode, WarmUpSettings } from "./settings";
+import type { NaturalLanguage, SpeedUnit, TypingMode, WarmUpSettings } from "./settings";
 
 /** A finished run, as persisted in the extension's global state. */
 export interface TestResult {
@@ -11,8 +11,10 @@ export interface TestResult {
   count: number;
   punctuation: boolean;
   numbers: boolean;
-  wpm: number;
-  rawWpm: number;
+  /** Speed, expressed in `unit`. */
+  speed: number;
+  rawSpeed: number;
+  unit: SpeedUnit;
   /** Percentage, 0-100. */
   accuracy: number;
   /** Percentage, 0-100. */
@@ -38,7 +40,8 @@ export function resultKey(result: {
   const flags = [result.punctuation && "punctuation", result.numbers && "numbers"]
     .filter(Boolean)
     .join("+");
-  const base = `${result.mode}:${result.mode === "code" ? "-" : result.count}:${result.language}`;
+  const sized = result.mode === "words" || result.mode === "time";
+  const base = `${result.mode}:${sized ? result.count : "-"}:${result.language}`;
   return flags ? `${base}:${flags}` : base;
 }
 
@@ -72,4 +75,4 @@ export interface WebviewState {
   customText?: CustomText;
 }
 
-export type { NaturalLanguage, TypingMode, WarmUpSettings };
+export type { NaturalLanguage, SpeedUnit, TypingMode, WarmUpSettings };

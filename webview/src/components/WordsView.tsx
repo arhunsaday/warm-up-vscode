@@ -1,6 +1,7 @@
+import { trackOffset } from "@core/engine/layout";
+import { type WordsState, charsFor } from "@core/engine/words";
+import type { WarmUpSettings } from "@shared/settings";
 import { memo, useRef } from "react";
-import type { WarmUpSettings } from "../../../shared/settings";
-import { type WordsState, charsFor } from "../engine/words";
 import { useCaret } from "../hooks/useCaret";
 import { Caret } from "./Caret";
 
@@ -18,9 +19,11 @@ export function WordsView({ state, settings, idle }: WordsViewProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const caret = useCaret(trackRef, state);
 
-  const lineHeight = settings.fontSize * LINE_RATIO;
+  // Whole pixels: a fractional line height makes every line boundary land on a
+  // sub-pixel, which is exactly what makes the text look like it jitters.
+  const lineHeight = Math.round(settings.fontSize * LINE_RATIO);
   // Keep the active word on the second line: the eye reads ahead, not behind.
-  const offset = Math.max(0, caret.top - lineHeight);
+  const offset = trackOffset(caret.top, caret.height, lineHeight);
 
   return (
     <div
@@ -28,7 +31,7 @@ export function WordsView({ state, settings, idle }: WordsViewProps) {
       style={{
         height: lineHeight * VISIBLE_LINES,
         fontSize: settings.fontSize,
-        lineHeight: LINE_RATIO,
+        lineHeight: `${lineHeight}px`,
       }}
     >
       <div className="words-track" ref={trackRef} style={{ transform: `translateY(${-offset}px)` }}>

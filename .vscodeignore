@@ -9,9 +9,12 @@
 coverage/**
 node_modules/**
 scripts/**
+core/**
 shared/**
 src/**
 webview/**
+website/**
+vercel.json
 dist/test/**
 dist/**/*.map
 *.config.ts

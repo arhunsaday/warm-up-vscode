@@ -2,7 +2,7 @@
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
   "files": {
-    "ignore": ["dist", "out", ".vscode-test", "webview/src/data/**"]
+    "ignore": ["dist", "out", ".vscode-test", "core/data/**"]
   },
   "organizeImports": { "enabled": true },
   "formatter": {

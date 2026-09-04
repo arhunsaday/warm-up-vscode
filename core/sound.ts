@@ -1,4 +1,4 @@
-import type { SoundPack } from "../../shared/settings";
+import type { SoundPack } from "@shared/settings";
 
 interface SoundConfig {
   pack: SoundPack;

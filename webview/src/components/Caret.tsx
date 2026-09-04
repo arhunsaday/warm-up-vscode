@@ -1,4 +1,4 @@
-import type { CaretStyle } from "../../../shared/settings";
+import type { CaretStyle } from "@shared/settings";
 import type { CaretPosition } from "../hooks/useCaret";
 
 interface CaretProps {

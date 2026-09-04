@@ -5,6 +5,7 @@ import { Results } from "./components/Results";
 import { StatsBar } from "./components/StatsBar";
 import { Toolbar } from "./components/Toolbar";
 import { WordsView } from "./components/WordsView";
+import { ZenView } from "./components/ZenView";
 import { useTypingTest } from "./hooks/useTypingTest";
 
 /** How long without a keystroke before the caret starts blinking again. */
@@ -78,6 +79,8 @@ export function App() {
       markActive();
       if (phase === "finished") {
         restart(false);
+      } else if (session?.kind === "zen" && event.shiftKey) {
+        test.finishZen();
       } else {
         handleChar("\n");
       }
@@ -126,9 +129,11 @@ export function App() {
       <header className="app__header">
         <h1>Warm Up</h1>
         <p className="app__hint">
-          {settings.quickRestart === "off"
-            ? "click restart to start over"
-            : `${settings.quickRestart} — new test · shift+${settings.quickRestart} — repeat the same text`}
+          {mode === "zen"
+            ? "shift+enter — finish · esc — start over"
+            : settings.quickRestart === "off"
+              ? "click restart to start over"
+              : `${settings.quickRestart} — new test · shift+${settings.quickRestart} — repeat the same text`}
         </p>
       </header>
 
@@ -146,7 +151,11 @@ export function App() {
           <Results
             result={test.result}
             samples={test.samples}
-            isPersonalBest={test.isPersonalBest}
+            // Zen runs and custom snippets are never stored, so they can never
+            // be a personal best.
+            isPersonalBest={test.isPersonalBest && mode !== "zen" && !test.custom}
+            canRepeat={mode !== "zen"}
+            quoteSource={session?.quote?.source}
             onRestart={restart}
           />
         ) : (
@@ -163,6 +172,9 @@ export function App() {
               {session?.kind === "words" && session.words && (
                 <WordsView state={session.words} settings={settings} idle={idle} />
               )}
+              {session?.kind === "zen" && session.zen && (
+                <ZenView state={session.zen} settings={settings} idle={idle} />
+              )}
               {session?.kind === "code" && session.code && (
                 <CodeView
                   state={session.code}
@@ -175,13 +187,33 @@ export function App() {
               {!focused && <p className="typing__overlay">click here or press any key to focus</p>}
             </div>
 
-            <div className={`app__actions${phase === "running" ? " app__actions--hidden" : ""}`}>
-              <button type="button" className="button button--quiet" onClick={() => restart(false)}>
-                restart
-              </button>
-              <button type="button" className="button button--quiet" onClick={() => restart(true)}>
-                repeat
-              </button>
+            <div
+              className={`app__actions${
+                phase === "running" && mode !== "zen" ? " app__actions--hidden" : ""
+              }`}
+            >
+              {mode === "zen" && phase === "running" ? (
+                <button type="button" className="button button--primary" onClick={test.finishZen}>
+                  finish
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="button button--quiet"
+                  onClick={() => restart(false)}
+                >
+                  restart
+                </button>
+              )}
+              {mode !== "zen" && (
+                <button
+                  type="button"
+                  className="button button--quiet"
+                  onClick={() => restart(true)}
+                >
+                  repeat
+                </button>
+              )}
             </div>
           </>
         )}

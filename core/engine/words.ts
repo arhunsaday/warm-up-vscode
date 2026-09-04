@@ -1,4 +1,4 @@
-import type { StopOnError } from "../../../shared/settings";
+import type { StopOnError } from "@shared/settings";
 import type { CharCounts, CharState, Step } from "./types";
 
 /** Overflow characters kept per word before further input is dropped. */

@@ -1,4 +1,4 @@
-import type { HostMessage, WebviewMessage, WebviewState } from "../../shared/messages";
+import type { HostMessage, WebviewMessage, WebviewState } from "@shared/messages";
 
 interface VsCodeApi {
   postMessage(message: WebviewMessage): void;

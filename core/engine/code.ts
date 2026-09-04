@@ -1,4 +1,4 @@
-import type { StopOnError } from "../../../shared/settings";
+import type { StopOnError } from "@shared/settings";
 import type { CharCounts, CharState, Step } from "./types";
 
 export interface CodeState {

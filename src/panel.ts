@@ -1,3 +1,5 @@
+import type { CustomText, HostMessage, WebviewMessage } from "@shared/messages";
+import type { SettingKey } from "@shared/settings";
 import {
   type Disposable,
   Uri,
@@ -8,8 +10,6 @@ import {
   window,
   workspace,
 } from "vscode";
-import type { CustomText, HostMessage, WebviewMessage } from "../shared/messages";
-import type { SettingKey } from "../shared/settings";
 import { CONFIG_SECTION, readSettings, writeSetting } from "./config";
 import type { ResultStore } from "./storage";
 

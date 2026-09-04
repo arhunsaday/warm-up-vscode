@@ -1,6 +1,6 @@
+import { languageLabel } from "@core/data";
+import { type TestResult, resultKey } from "@shared/messages";
 import { useMemo, useState } from "react";
-import { type TestResult, resultKey } from "../../../shared/messages";
-import { languageLabel } from "../data";
 
 interface HistoryProps {
   results: TestResult[];
@@ -19,19 +19,19 @@ export function History({ results, onClear }: HistoryProps) {
     for (const result of results) {
       const key = resultKey(result);
       const current = map.get(key);
-      if (!current || result.wpm > current.wpm) {
+      if (!current || result.speed > current.speed) {
         map.set(key, result);
       }
     }
-    return [...map.values()].sort((a, b) => b.wpm - a.wpm).slice(0, 8);
+    return [...map.values()].sort((a, b) => b.speed - a.speed).slice(0, 8);
   }, [results]);
 
   const average = useMemo(() => {
-    const recent = results.slice(0, 10);
+    const recent = results.slice(0, 10).filter((result) => Number.isFinite(result.speed));
     if (recent.length === 0) {
       return null;
     }
-    return Math.round(recent.reduce((total, result) => total + result.wpm, 0) / recent.length);
+    return Math.round(recent.reduce((total, result) => total + result.speed, 0) / recent.length);
   }, [results]);
 
   if (results.length === 0) {
@@ -47,7 +47,8 @@ export function History({ results, onClear }: HistoryProps) {
         aria-expanded={open}
       >
         <span>
-          {results.length} tests · last 10 average {average} wpm
+          {results.length} {results.length === 1 ? "test" : "tests"}
+          {average !== null && ` · last 10 average ${average} ${results[0]?.unit ?? "wpm"}`}
         </span>
         <span className="history__chevron">{open ? "▾" : "▸"}</span>
       </button>
@@ -59,7 +60,7 @@ export function History({ results, onClear }: HistoryProps) {
             <thead>
               <tr>
                 <th scope="col">test</th>
-                <th scope="col">wpm</th>
+                <th scope="col">speed</th>
                 <th scope="col">accuracy</th>
                 <th scope="col">date</th>
               </tr>
@@ -72,7 +73,9 @@ export function History({ results, onClear }: HistoryProps) {
                       ? `code · ${languageLabel(best.language)}`
                       : `${best.mode} ${best.count} · ${languageLabel(best.language)}`}
                   </th>
-                  <td>{best.wpm}</td>
+                  <td>
+                    {best.speed} {best.unit}
+                  </td>
                   <td>{best.accuracy}%</td>
                   <td>{new Date(best.date).toLocaleDateString()}</td>
                 </tr>
