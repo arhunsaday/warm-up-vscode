@@ -35,6 +35,9 @@ webview, with the typing logic isolated in a unit-tested engine.
 - A context menu entry for practising with the current selection.
 - CI on Linux, macOS and Windows, and a release workflow that publishes to the
   VS Marketplace and Open VSX on a `v*` tag.
+- A landing page in `website/`, deployed to Vercel, built on the same engine as
+  the extension: the headline is a playable typing test and the page carries a
+  live status bar.
 
 ### Changed
 

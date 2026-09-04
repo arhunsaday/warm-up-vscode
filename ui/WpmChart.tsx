@@ -1,4 +1,5 @@
 import type { Sample } from "@core/engine/stats";
+import "./chart.css";
 import type { SpeedUnit } from "@shared/settings";
 import { useEffect, useRef, useState } from "react";
 

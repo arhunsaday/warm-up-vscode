@@ -48,6 +48,7 @@ src/             Extension host (bundled to dist/extension.cjs by tsup)
   editorSession.ts  Typing in a real editor tab
 webview/src/     The panel, in React (bundled to dist/webview/* by vite)
 website/src/     The landing page, in React (deployed to Vercel)
+  typing/        The page's typing surfaces, over the same core engine
 ```
 
 Imports use the `@core/*` and `@shared/*` aliases, declared once in

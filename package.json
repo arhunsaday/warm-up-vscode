@@ -1,8 +1,8 @@
 {
   "name": "warm-up-typing-test",
-  "displayName": "Warm Up \u2014 Typing Test",
+  "displayName": "Warm Up — Typing Test",
   "publisher": "Jeusto",
-  "description": "\ud83d\udd25 Practice and improve your typing speed without leaving VS Code. Words, timed runs and real code snippets, with live WPM, sounds and personal bests.",
+  "description": "🔥 Practice and improve your typing speed without leaving VS Code. Words, timed runs and real code snippets, with live WPM, sounds and personal bests.",
   "version": "2.0.0",
   "license": "GPL-3.0-or-later",
   "type": "module",
@@ -20,7 +20,10 @@
     "node": ">=20"
   },
   "packageManager": "pnpm@9.15.4",
-  "categories": ["Other", "Education"],
+  "categories": [
+    "Other",
+    "Education"
+  ],
   "keywords": [
     "typing",
     "typing test",
@@ -35,14 +38,23 @@
     "theme": "dark"
   },
   "main": "./dist/extension.cjs",
-  "activationEvents": ["onStartupFinished", "onWebviewPanel:warmUp"],
+  "activationEvents": [
+    "onStartupFinished",
+    "onWebviewPanel:warmUp"
+  ],
   "contributes": {
     "configuration": {
       "title": "Warm Up",
       "properties": {
         "warmUp.mode": {
           "type": "string",
-          "enum": ["words", "time", "quotes", "code", "zen"],
+          "enum": [
+            "words",
+            "time",
+            "quotes",
+            "code",
+            "zen"
+          ],
           "enumDescriptions": [
             "Type a fixed number of words.",
             "Type as many words as you can before the clock runs out.",
@@ -56,7 +68,17 @@
         },
         "warmUp.count": {
           "type": "number",
-          "enum": [10, 15, 25, 30, 50, 60, 100, 120, 240],
+          "enum": [
+            10,
+            15,
+            25,
+            30,
+            50,
+            60,
+            100,
+            120,
+            240
+          ],
           "default": 25,
           "description": "Number of words (words mode) or seconds on the clock (time mode).",
           "scope": "application"
@@ -117,7 +139,11 @@
         },
         "warmUp.stopOnError": {
           "type": "string",
-          "enum": ["off", "letter", "word"],
+          "enum": [
+            "off",
+            "letter",
+            "word"
+          ],
           "enumDescriptions": [
             "Never block: mistakes are recorded and you keep going.",
             "Block until the mistyped letter is corrected.",
@@ -129,7 +155,12 @@
         },
         "warmUp.sound": {
           "type": "string",
-          "enum": ["off", "click", "typewriter", "beep"],
+          "enum": [
+            "off",
+            "click",
+            "typewriter",
+            "beep"
+          ],
           "default": "off",
           "description": "Sound played on each keypress.",
           "scope": "application"
@@ -150,7 +181,12 @@
         },
         "warmUp.caretStyle": {
           "type": "string",
-          "enum": ["line", "block", "underline", "off"],
+          "enum": [
+            "line",
+            "block",
+            "underline",
+            "off"
+          ],
           "default": "line",
           "description": "Shape of the typing caret.",
           "scope": "application"
@@ -183,14 +219,23 @@
         },
         "warmUp.quickRestart": {
           "type": "string",
-          "enum": ["esc", "tab", "off"],
+          "enum": [
+            "esc",
+            "tab",
+            "off"
+          ],
           "default": "esc",
           "description": "Key that restarts the test instantly. Hold Shift to keep the same text.",
           "scope": "application"
         },
         "warmUp.quoteLength": {
           "type": "string",
-          "enum": ["short", "medium", "long", "any"],
+          "enum": [
+            "short",
+            "medium",
+            "long",
+            "any"
+          ],
           "default": "medium",
           "description": "How long a quote to practise with in quotes mode.",
           "scope": "application"
@@ -427,6 +472,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.10.5",
     "@types/prismjs": "^1.26.6",
@@ -437,11 +483,13 @@
     "@vscode/test-cli": "^0.0.15",
     "@vscode/test-electron": "^3.1.0",
     "@vscode/vsce": "^3.2.1",
+    "canvas-confetti": "^1.9.4",
     "concurrently": "^9.1.2",
     "ovsx": "^0.10.1",
     "prismjs": "^1.29.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-router": "^8.3.1",
     "tsup": "^8.3.5",
     "typescript": "^5.7.3",
     "vite": "^6.0.7",

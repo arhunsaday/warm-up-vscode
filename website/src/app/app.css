@@ -1,0 +1,620 @@
+/*
+ * The web app.
+ *
+ * `--accent`, `--bg` and `--ink` are written onto the document by the theme
+ * picker; everything else is derived from them with color-mix, so a new palette
+ * is three colours rather than a new stylesheet.
+ */
+
+body[data-route="app"] {
+  /* The app owns the whole viewport; no landing-page chrome to make room for. */
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+body[data-route="app"] .aurora,
+body[data-route="app"] .grid {
+  display: none;
+}
+
+.app {
+  --dim: color-mix(in srgb, var(--ink) 55%, transparent);
+  --faint: color-mix(in srgb, var(--ink) 32%, transparent);
+  --ghost: color-mix(in srgb, var(--ink) 18%, transparent);
+  --line: color-mix(in srgb, var(--ink) 12%, transparent);
+  --panel: color-mix(in srgb, var(--ink) 4%, transparent);
+  --error: #ff6b6b;
+
+  /* Variables the shared chart reads. */
+  --wu-accent: var(--accent);
+  --wu-error: var(--error);
+  --wu-muted: var(--dim);
+  --wu-border: var(--line);
+  --wu-chart-line: var(--line);
+  --wu-chart-raw: var(--dim);
+  --wu-chart-surface: color-mix(in srgb, var(--ink) 8%, var(--bg));
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-height: 100vh;
+  width: min(100% - 2.5rem, 1000px);
+  margin-inline: auto;
+  padding: 1.5rem 0 2.5rem;
+}
+
+html.is-colorblind .app {
+  --error: #d18616;
+}
+
+/* The colour-blind palette also needs the error hue away from the accent. */
+html.is-light .app {
+  --error: #c0392b;
+}
+
+/* ------------------------------------------------------------------- header */
+
+.app__head {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+  font-family: var(--mono);
+}
+
+.app__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ink);
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.app__brand-mark {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.app__counter {
+  color: var(--faint);
+  font-size: 1.2rem;
+  font-variant-numeric: tabular-nums;
+  transition: color 200ms ease;
+}
+
+.app__counter--live {
+  color: var(--accent);
+}
+
+.app__live {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-left: auto;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.app__live b {
+  font-weight: 500;
+}
+
+.app__live-dim {
+  color: var(--dim);
+}
+
+/* ------------------------------------------------------------------ toolbar */
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1.1rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 10px;
+  background: var(--panel);
+  transition: opacity 180ms ease;
+}
+
+.bar--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bar__group {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: auto;
+}
+
+.chip {
+  padding: 0.25rem 0.65rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--faint);
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: color 140ms ease, background 140ms ease;
+}
+
+.chip:hover {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+
+.chip--active {
+  color: var(--accent);
+}
+
+.bar__select select {
+  padding: 0.2rem 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.bar__palette {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--faint);
+  font: inherit;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.bar__palette:hover {
+  color: var(--ink);
+}
+
+/* -------------------------------------------------------------------- stage */
+
+.app__main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.stage {
+  position: relative;
+  cursor: text;
+}
+
+.stage--blurred .surface,
+.stage--blurred .zen {
+  filter: blur(4px);
+}
+
+.stage__overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  margin: 0;
+  color: var(--dim);
+}
+
+.app__actions {
+  display: flex;
+  justify-content: center;
+  transition: opacity 180ms ease;
+}
+
+.app__actions--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.zen {
+  position: relative;
+  font-family: var(--mono);
+  font-size: 1.3rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.zen__placeholder {
+  color: var(--faint);
+}
+
+.zen__caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  background: var(--accent);
+  animation: caret-blink 1.05s steps(1) infinite;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ------------------------------------------------------------------ results */
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.results__top {
+  display: flex;
+  align-items: flex-end;
+  gap: 2.5rem;
+}
+
+.results__hero {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.results__value {
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 3.6rem;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.results__hero--minor .results__value {
+  color: var(--ink);
+  font-size: 2rem;
+}
+
+.results__unit {
+  color: var(--dim);
+  font-family: var(--mono);
+}
+
+.results__note {
+  color: var(--dim);
+  font-size: 0.85rem;
+}
+
+.results__source {
+  margin: -0.75rem 0 0;
+  color: var(--dim);
+  font-style: italic;
+}
+
+.badge {
+  align-self: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.results__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+
+.stat dt {
+  color: var(--dim);
+  font-size: 0.8rem;
+}
+
+.stat dd {
+  margin: 0.15rem 0 0;
+  font-family: var(--mono);
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.results__caption,
+.results__keys {
+  color: var(--dim);
+}
+
+.results__caption {
+  margin: 0 0 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+}
+
+.results__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* ------------------------------------------------------------------ palette */
+
+.palette {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: center;
+  padding-top: 12vh;
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.palette__box {
+  width: min(100% - 2rem, 560px);
+  max-height: 62vh;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--ink) 6%, var(--bg));
+  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+}
+
+.palette__input {
+  padding: 0.9rem 1rem;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 1rem;
+  outline: none;
+}
+
+.palette__list {
+  margin: 0;
+  padding: 0.35rem;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.palette__item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.palette__item--active {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.palette__group {
+  min-width: 9rem;
+  color: var(--dim);
+  font-size: 0.8rem;
+}
+
+.palette__label {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+}
+
+.palette__hint {
+  margin-left: auto;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+}
+
+.palette__empty {
+  padding: 1rem;
+  color: var(--dim);
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------ history */
+
+.history {
+  border-top: 1px solid var(--line);
+  padding-top: 0.75rem;
+}
+
+.history__toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.35rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--dim);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.history__chevron {
+  margin-left: auto;
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  transition: transform 200ms ease;
+}
+
+.history__chevron--open {
+  transform: rotate(-135deg);
+}
+
+.history__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+}
+
+.history__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.history__table caption {
+  padding-bottom: 0.4rem;
+  color: var(--dim);
+  text-align: left;
+}
+
+.history__table th,
+.history__table td {
+  padding: 0.35rem 0.75rem 0.35rem 0;
+  border-bottom: 1px solid var(--line);
+  font-weight: 400;
+  text-align: left;
+}
+
+.history__table thead th {
+  color: var(--dim);
+  font-size: 0.8rem;
+}
+
+.history__table td {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.app__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--faint);
+  font-size: 0.82rem;
+}
+
+.app__foot a {
+  color: var(--dim);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zen__caret {
+    animation: none;
+  }
+  .bar,
+  .app__actions,
+  .app__counter,
+  .history__chevron {
+    transition: none;
+  }
+}
+
+
+/* --------------------------------------------- theming the shared UI pieces */
+
+/* The landing page's palette variables are global; inside the app the theme wins. */
+.app .button--primary {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.app .button {
+  border-color: var(--line);
+  background: transparent;
+  color: var(--ink);
+}
+
+.app .button:hover {
+  border-color: var(--ghost);
+}
+
+.app .ghost-button:hover,
+.app .app__foot a:hover {
+  color: var(--accent);
+}
+
+.app kbd {
+  border-color: var(--line);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  color: var(--dim);
+}
+
+.app .surface__caret {
+  background: var(--accent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.app .ch {
+  color: var(--ink);
+}
+
+.app .ch--pending,
+.app .ch--skipped {
+  color: var(--ghost);
+}
+
+.app .ch--incorrect,
+.app .ch--extra,
+.app .ch--missed {
+  color: var(--error);
+}
+
+.app .code-line__number {
+  color: var(--ghost);
+}
+
+/* ------------------------------------------------------------- key heatmap */
+
+.app .keyboard__key {
+  border-color: var(--line);
+  color: var(--dim);
+}
+
+.app .keyboard__key--used {
+  border-color: transparent;
+  background: color-mix(
+    in srgb,
+    var(--accent) calc((12 + var(--weight) * 50) * 1%),
+    transparent
+  );
+  color: var(--ink);
+}
+
+.app .keyboard__key--missed {
+  border-color: transparent;
+  background: color-mix(
+    in srgb,
+    var(--error) calc((18 + var(--weight) * 55) * 1%),
+    transparent
+  );
+  color: var(--ink);
+}

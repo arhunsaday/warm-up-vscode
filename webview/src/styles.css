@@ -503,113 +503,11 @@ body {
   color: var(--wu-muted);
 }
 
-/* -------------------------------------------------------------------- chart */
-
-.chart {
-  position: relative;
-}
-
-.chart__grid {
-  stroke: var(--vscode-charts-lines, var(--wu-border));
-  stroke-width: 1;
-  opacity: 0.4;
-}
-
-.chart__label {
-  fill: var(--wu-muted);
-  font-size: 10px;
-}
-
-.chart__value {
-  fill: var(--wu-accent);
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.chart__line {
-  fill: none;
-  stroke-width: 2;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-
-.chart__line--wpm {
-  stroke: var(--wu-accent);
-}
-
-.chart__line--raw {
-  stroke: var(--vscode-charts-foreground, var(--wu-muted));
-  stroke-width: 1.5;
-  stroke-dasharray: 4 4;
-  opacity: 0.7;
-}
-
-.chart__error line {
-  stroke: var(--wu-error);
-  stroke-width: 2;
-  stroke-linecap: round;
-}
-
-.chart__crosshair {
-  stroke: var(--wu-muted);
-  stroke-width: 1;
-  stroke-dasharray: 2 3;
-}
-
-.chart__tooltip {
-  position: absolute;
-  top: 6px;
-  display: flex;
-  gap: 10px;
-  padding: 4px 10px;
-  border: 1px solid var(--wu-border);
-  border-radius: 6px;
-  background: var(--vscode-editorHoverWidget-background, var(--vscode-editor-background));
-  font-size: 0.85em;
-  pointer-events: none;
-  white-space: nowrap;
-}
-
-.chart__tooltip-error {
-  color: var(--wu-error);
-}
-
-.chart__legend {
-  display: flex;
-  gap: 16px;
-  margin: 6px 0 0;
-  padding: 0;
-  list-style: none;
-  color: var(--wu-muted);
-  font-size: 0.8em;
-}
-
-.chart__legend li {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.swatch {
-  width: 14px;
-  height: 0;
-  border-top-width: 2px;
-  border-top-style: solid;
-}
-
-.swatch--wpm {
-  border-top-color: var(--wu-accent);
-}
-
-.swatch--raw {
-  border-top-style: dashed;
-  border-top-color: var(--vscode-charts-foreground, var(--wu-muted));
-}
-
-.swatch--error {
-  border-top-color: var(--wu-error);
-  border-top-style: dotted;
-  border-top-width: 3px;
+/* The shared chart reads these; map them onto the editor's own chart colours. */
+:root {
+  --wu-chart-line: var(--vscode-charts-lines, var(--wu-border));
+  --wu-chart-raw: var(--vscode-charts-foreground, var(--wu-muted));
+  --wu-chart-surface: var(--vscode-editorHoverWidget-background, var(--vscode-editor-background));
 }
 
 /* ------------------------------------------------------------------ history */

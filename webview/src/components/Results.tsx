@@ -1,7 +1,7 @@
 import { languageLabel } from "@core/data";
 import type { Sample } from "@core/engine/stats";
 import type { TestResult } from "@shared/messages";
-import { WpmChart } from "./WpmChart";
+import { WpmChart } from "@ui/WpmChart";
 
 interface ResultsProps {
   result: TestResult;

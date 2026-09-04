@@ -1,37 +1,29 @@
-import { SNIPPETS, WORDS, quotesFor } from "@core/data";
 import {
-  type CodeState,
   backspace as codeBackspace,
-  codeCounts,
   tab as codeTab,
   typeChar as codeTypeChar,
-  createCodeState,
-  typeableLength,
-  typedLength,
 } from "@core/engine/code";
-import { generateWords, normalizeCode, pickSnippet } from "@core/engine/generator";
-import { type Quote, pickQuote, quoteWords } from "@core/engine/quotes";
-import { type Sample, type Stats, computeSamples, computeStats } from "@core/engine/stats";
-import type { CharCounts, Keystroke } from "@core/engine/types";
+import { typeableLength, typedLength } from "@core/engine/code";
 import {
-  type WordsState,
-  appendWords,
-  createWordsState,
+  type Session,
+  createSession,
+  needsMoreWords,
+  sessionCounts,
+  topUpWords,
+} from "@core/engine/session";
+import { type Sample, type Stats, computeSamples, computeStats } from "@core/engine/stats";
+import type { Keystroke } from "@core/engine/types";
+import {
   backspace as wordsBackspace,
   wordsCompleted,
-  wordsCounts,
   typeChar as wordsTypeChar,
 } from "@core/engine/words";
 import {
-  type ZenState,
-  createZenState,
   backspace as zenBackspace,
-  zenCounts,
   finish as zenFinish,
   typeChar as zenTypeChar,
   zenWordCount,
 } from "@core/engine/zen";
-import { tokenizeToChars } from "@core/highlight";
 import { sounds } from "@core/sound";
 import { type CustomText, type TestResult, resultKey } from "@shared/messages";
 import {
@@ -45,21 +37,12 @@ import { getState, onHostMessage, setState as persistState, postMessage } from "
 
 export type Phase = "idle" | "running" | "finished";
 
-/** Words generated ahead of the caret in time mode. */
-const TIME_MODE_BUFFER = 60;
-
-export interface Session {
-  kind: "words" | "code" | "zen";
-  words: WordsState | null;
-  code: CodeState | null;
-  zen: ZenState | null;
-  /** Prism token class per character, aligned with `code.target`. */
-  codeClasses: string[];
-  /** Shown in the toolbar: language name, or where a custom snippet came from. */
-  label: string;
-  /** Set in quotes mode, for the attribution on the results screen. */
-  quote?: Quote;
-}
+/**
+ * Speed is characters over time, so the first keystroke of a run divides by a
+ * few milliseconds and flashes an absurd number. Live figures are therefore
+ * computed over at least a second; finished results use the real duration.
+ */
+const LIVE_FLOOR_MS = 1000;
 
 export interface TypingTest {
   settings: WarmUpSettings;
@@ -153,64 +136,12 @@ export function useTypingTest(): TypingTest {
   // ------------------------------------------------------------------- session
 
   const buildSession = useCallback(
-    (previous: Session | null, keepText: boolean): Session => {
-      const current = settingsRef.current;
-      const base = { words: null, code: null, zen: null, codeClasses: [] as string[] };
-
-      if (mode === "zen") {
-        return { ...base, kind: "zen", zen: createZenState(), label: "zen" };
-      }
-
-      if (mode === "code") {
-        const languageId = custom?.languageId ?? current.programmingLanguage;
-        const target =
-          keepText && previous?.code
-            ? previous.code.target
-            : custom
-              ? normalizeCode(custom.text)
-              : pickSnippet(SNIPPETS[current.programmingLanguage] ?? []);
-
-        return {
-          ...base,
-          kind: "code",
-          code: createCodeState(target),
-          codeClasses: tokenizeToChars(target, languageId),
-          label: custom ? custom.origin : current.programmingLanguage,
-        };
-      }
-
-      if (mode === "quotes") {
-        const quote =
-          (keepText && previous?.quote) ||
-          pickQuote(quotesFor(current.language), current.quoteLength);
-
-        return {
-          ...base,
-          kind: "words",
-          words: createWordsState(quote ? quoteWords(quote) : []),
-          label: current.language,
-          quote,
-        };
-      }
-
-      const pool = WORDS[current.language] ?? WORDS.english;
-      const count = mode === "time" ? TIME_MODE_BUFFER : current.count;
-      const words =
-        keepText && previous?.words
-          ? previous.words.words
-          : generateWords(pool, count, {
-              punctuation: current.punctuation,
-              numbers: current.numbers,
-            });
-
-      return {
-        ...base,
-        kind: "words",
-        words: createWordsState(words),
-        label: current.language,
-      };
-    },
-    [custom, mode],
+    (previous: Session | null, keepText: boolean): Session =>
+      createSession(settingsRef.current, {
+        custom,
+        reuse: keepText ? previous : null,
+      }),
+    [custom],
   );
 
   const restart = useCallback(
@@ -249,19 +180,6 @@ export function useTypingTest(): TypingTest {
 
   // --------------------------------------------------------------------- finish
 
-  const countsOf = useCallback((session: Session): CharCounts => {
-    if (session.kind === "zen" && session.zen) {
-      return zenCounts(session.zen);
-    }
-    if (session.kind === "code" && session.code) {
-      return codeCounts(session.code);
-    }
-    if (session.words) {
-      return wordsCounts(session.words);
-    }
-    return { correct: 0, incorrect: 0, extra: 0, missed: 0 };
-  }, []);
-
   const finish = useCallback(
     (finished: Session, durationMs: number) => {
       if (finishing.current) {
@@ -269,7 +187,7 @@ export function useTypingTest(): TypingTest {
       }
       finishing.current = true;
 
-      const counts = countsOf(finished);
+      const counts = sessionCounts(finished);
       const current = settingsRef.current;
       const unit = speedUnitFor(finished.label);
       const stats = computeStats(counts, keystrokes.current, durationMs, unit);
@@ -299,7 +217,7 @@ export function useTypingTest(): TypingTest {
         postMessage({ type: "saveResult", result: testResult });
       }
     },
-    [custom, mode, countsOf],
+    [custom, mode],
   );
 
   // ---------------------------------------------------------------------- timer
@@ -357,16 +275,8 @@ export function useTypingTest(): TypingTest {
         let words = step.state;
 
         // Time mode never runs out of words.
-        if (mode === "time" && words.words.length - words.active < TIME_MODE_BUFFER / 2) {
-          const settings = settingsRef.current;
-          words = appendWords(
-            words,
-            generateWords(WORDS[settings.language] ?? WORDS.english, TIME_MODE_BUFFER, {
-              punctuation: settings.punctuation,
-              numbers: settings.numbers,
-            }),
-          );
-          words = { ...words, finished: false };
+        if (mode === "time" && needsMoreWords(words)) {
+          words = topUpWords(words, settingsRef.current);
         }
 
         next = { ...current, words };
@@ -446,12 +356,12 @@ export function useTypingTest(): TypingTest {
       return { speed: 0, rawSpeed: 0, unit: "wpm", accuracy: 100, consistency: 100 };
     }
     return computeStats(
-      countsOf(session),
+      sessionCounts(session),
       keystrokes.current,
-      Math.max(elapsedMs, 1),
+      Math.max(elapsedMs, LIVE_FLOOR_MS),
       speedUnitFor(session.label),
     );
-  }, [session, elapsedMs, countsOf]);
+  }, [session, elapsedMs]);
 
   const progress = useMemo(() => {
     if (!session) {

@@ -124,13 +124,18 @@ Settings from version 1 are migrated automatically the first time you run 2.0.
 
 ## Website
 
-The landing page lives in [`website/`](website) and is deployed to Vercel. It
-imports the extension's real typing engine from `core/`, so the demo on the page
-is the product rather than a recording of it.
+The landing page lives in [`website/`](website) and deploys to Vercel. It imports
+the extension's real typing engine from `core/`, so the page *is* the product:
+the headline is a typing test, and the playground below it runs words, the clock,
+quotes and code with a live keyboard heatmap.
 
 ```bash
-pnpm dev:website
+pnpm dev:website     # local
+pnpm build:website   # → website/dist
 ```
+
+Vercel needs no configuration beyond the repository: `vercel.json` at the root
+sets the build command and output directory.
 
 ## Contributing
 
