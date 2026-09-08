@@ -1,0 +1,38 @@
+name: Bug report
+description: Something in the typing test does not work as expected.
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Extension version
+      placeholder: "2.0.0"
+    validations:
+      required: true
+  - type: input
+    id: vscode
+    attributes:
+      label: VS Code version and OS
+      placeholder: "1.96.0 on macOS 15"
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Which mode?
+      options: [words, time, code, practice with selection or file, not mode specific]
+    validations:
+      required: true
+  - type: input
+    id: layout
+    attributes:
+      label: Keyboard layout
+      description: Relevant for dead keys, AltGr and IME issues.
+      placeholder: "French AZERTY"

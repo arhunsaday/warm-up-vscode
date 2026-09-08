@@ -1,0 +1,82 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Build and attach the VSIX without publishing
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build, publish and release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Check the tag matches package.json
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          manifest="$(node -p "require('./package.json').version")"
+          tag="${GITHUB_REF_NAME#v}"
+          if [ "$manifest" != "$tag" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match package.json version $manifest"
+            exit 1
+          fi
+          echo "VERSION=$manifest" >> "$GITHUB_ENV"
+
+      - name: Verify
+        run: |
+          pnpm lint
+          pnpm typecheck
+          pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Extension tests
+        run: xvfb-run -a pnpm exec vscode-test
+
+      - name: Package
+        run: pnpm exec vsce package --no-dependencies --out warm-up-typing-test.vsix
+
+      - name: Publish to the VS Marketplace
+        if: startsWith(github.ref, 'refs/tags/v') && env.VSCE_PAT != ''
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: pnpm exec vsce publish --no-dependencies --packagePath warm-up-typing-test.vsix
+
+      - name: Publish to Open VSX
+        if: startsWith(github.ref, 'refs/tags/v') && env.OVSX_PAT != ''
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: pnpm exec ovsx publish warm-up-typing-test.vsix --pat "$OVSX_PAT"
+
+      - name: Create the GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: warm-up-typing-test.vsix
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        with:
+          name: warm-up-typing-test.vsix
+          path: warm-up-typing-test.vsix

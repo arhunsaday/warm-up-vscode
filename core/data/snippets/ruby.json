@@ -1,0 +1,8 @@
+[
+  "(1..100).each do |n|\n  puts if (n % 15).zero?\n    \"FizzBuzz\"\n  elsif (n % 5).zero?\n    \"Buzz\"\n  elsif (n % 3).zero?\n    \"Fizz\"\n  else\n    n\n  end\nend",
+  "magic_number = 9*8*7\ndiv = 9876432.div(magic_number) * magic_number\ncandidates = div.step(0, -magic_number)\n\n res = candidates.find do |c|\n  digits = c.digits\n  (digits & [0,5]).empty? && digits == digits.uniq\nend\n puts \"Largest decimal number is #{res}\"",
+  "class Thingamajig\n  def initialize\n    fail 'not yet implemented'\n  end\nend\nt = Thingamajig.allocate",
+  "f, r = nil\nfwd = proc {|c|\n  c =~ /[[:alpha:]]/ ? [(print c), fwd[Fiber.yield f]][1] : c }\nrev = proc {|c|\n  c =~ /[[:alpha:]]/ ? [rev[Fiber.yield r], (print c)][0] : c }\n\n(f = Fiber.new { loop { print fwd[Fiber.yield r] }}).resume\n(r = Fiber.new { loop { print rev[Fiber.yield f] }}).resume\n\ncoro = f\nuntil $stdin.eof?\n  coro = coro.resume($stdin.getc)\nend",
+  "def r_palindrome?(s)\n  if s.length <= 1\n    true\n  elsif s[0] != s[-1]\n    false\n  else\n    r_palindrome?(s[1..-2])\n  end\nend",
+  "def fib(n)\n   if n < 2\n     n\n   else\n     prev, fib = 0, 1\n     (n-1).times do\n       prev, fib = fib, fib + prev\n     end\n     fib\n   end\n end\n\np (0..10).map { |i| fib(i) }"
+]

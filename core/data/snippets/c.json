@@ -1,0 +1,6 @@
+[
+  "int main(void)\n{\n  printf(\"Hello world!\n\");\n  return EXIT_SUCCESS;\n}",
+  "int dir_empty(const char *path)\n{\n  struct dirent *ent;\n  int ret = 1;\n\n  DIR *d = opendir(path);\n  if (!d) {\n    fprintf(stderr, \"%s: \", path);\n    perror(\"\");\n    return -1;\n  }\n\n  while ((ent = readdir(d))) {\n    if (!strcmp(ent->d_name, \".\") || !(strcmp(ent->d_name, \"..\")))\n      continue;\n    ret = 0;\n    break;\n  }\n\n  closedir(d);\n  return ret;\n}",
+  "const char *str = \"\";\nif (str) { ... }\nif (str[0] == '0') { ... }\nif ( (str == NULL) || (strlen(str) == 0)) { ... }\nif (strcmp(str, \"\") == 0) { ... }",
+  "/* Calculate day of week in proleptic Gregorian calendar. Sunday == 0. */\nint wday(int year, int month, int day)\n{\n  int adjustment, mm, yy;\n\n  adjustment = (14 - month) / 12;\n  mm = month + 12 * adjustment - 2;\n  yy = year - adjustment;\n  return (day + (13 * mm - 1) / 5 + yy + yy / 4 - yy / 100 + yy / 400) % 7;\n}\n\nint main()\n{\n  int y;\n\n  for (y = 2008; y <= 2121; y++) {\n    if (wday(y, 12, 25) == 0) printf(\"%04d-12-25\", y);\n  }\n\n   return 0;\n}"
+]

@@ -1,0 +1,653 @@
+/*
+ * Everything is expressed in VS Code's own theme tokens, so the panel belongs to
+ * whatever theme the user runs instead of fighting it.
+ */
+
+:root {
+  --wu-text: var(--vscode-editor-foreground, var(--vscode-foreground));
+  --wu-muted: var(--vscode-descriptionForeground, rgba(127, 127, 127, 0.9));
+  --wu-faint: color-mix(in srgb, var(--wu-muted) 55%, transparent);
+  --wu-accent: var(--vscode-charts-blue, var(--vscode-textLink-foreground));
+  --wu-error: var(--vscode-charts-red, var(--vscode-errorForeground, #e05561));
+  --wu-error-dim: color-mix(in srgb, var(--wu-error) 60%, transparent);
+  --wu-caret: var(--vscode-editorCursor-foreground, var(--wu-accent));
+  --wu-surface: color-mix(in srgb, var(--wu-text) 6%, transparent);
+  --wu-border: var(--vscode-panel-border, color-mix(in srgb, var(--wu-text) 18%, transparent));
+  --wu-radius: 8px;
+  --wu-gap: 14px;
+}
+
+/* Color blind mode: errors move off red, and the caret picks up a second hue. */
+body.colorblind {
+  --wu-error: var(--vscode-charts-orange, #d18616);
+  --wu-caret: var(--vscode-charts-blue, #3794ff);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  color: var(--wu-text);
+  background: var(--vscode-editor-background);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size, 13px);
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 32px 28px 40px;
+  max-width: 1100px;
+}
+
+.app__header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.app__hint,
+.muted {
+  color: var(--wu-muted);
+}
+
+.app__hint {
+  margin: 4px 0 0;
+  font-size: 0.85em;
+}
+
+.app__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wu-gap);
+  flex: 1;
+}
+
+.app__actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  transition: opacity 160ms ease;
+}
+
+/* Nothing but the text while a run is in progress. */
+.app__actions--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The real input: focused at all times, never seen. */
+.hidden-input {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+}
+
+/* ------------------------------------------------------------------ toolbar */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 18px;
+  padding: 8px 14px;
+  border-radius: var(--wu-radius);
+  background: var(--wu-surface);
+  transition: opacity 160ms ease;
+}
+
+.toolbar--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  /* `fieldset` is used for the grouped options; it should not look like one. */
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: auto;
+}
+
+.toolbar__group--end {
+  margin-left: auto;
+}
+
+.toolbar__button {
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--wu-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.toolbar__button:hover {
+  color: var(--wu-text);
+  background: color-mix(in srgb, var(--wu-text) 8%, transparent);
+}
+
+.toolbar__button--active {
+  color: var(--wu-accent);
+}
+
+.toolbar__button:focus-visible,
+.button:focus-visible,
+.history__summary:focus-visible,
+.toolbar__select select:focus-visible {
+  outline: 1px solid var(--vscode-focusBorder);
+  outline-offset: 1px;
+}
+
+.toolbar__select select {
+  padding: 3px 6px;
+  border: 1px solid var(--vscode-dropdown-border, var(--wu-border));
+  border-radius: 6px;
+  background: var(--vscode-dropdown-background, transparent);
+  color: var(--vscode-dropdown-foreground, var(--wu-text));
+  font: inherit;
+  cursor: pointer;
+}
+
+.chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--wu-accent) 18%, transparent);
+  color: var(--wu-text);
+  font-size: 0.9em;
+}
+
+/* ---------------------------------------------------------------- stats bar */
+
+.stats-bar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  /* Fixed, not min-height: the live figures appear on the first keystroke and
+     must not resize the bar underneath the text. */
+  height: 1.8em;
+  color: var(--wu-accent);
+  font-size: 1.3em;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-bar__live {
+  display: flex;
+  gap: 14px;
+  font-size: 0.8em;
+}
+
+/* ------------------------------------------------------------- typing areas */
+
+.typing {
+  position: relative;
+  transition: filter 140ms ease;
+}
+
+.typing--blurred .words-viewport,
+.typing--blurred .code-viewport {
+  filter: blur(4px);
+}
+
+.typing__overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  margin: 0;
+  color: var(--wu-muted);
+  cursor: pointer;
+}
+
+.words-viewport,
+.code-viewport {
+  font-family: var(--vscode-editor-font-family, monospace);
+  overflow: hidden;
+}
+
+.words-viewport {
+  position: relative;
+  /* The track moves in whole lines; containing it in its own layer keeps the
+     transform off the main layout. */
+  contain: layout paint;
+}
+
+.words-track {
+  position: relative;
+  transition: transform 180ms ease;
+}
+
+.word {
+  display: inline-block;
+  margin: 0 0.35em 0 0;
+  white-space: nowrap;
+}
+
+.word--error {
+  text-decoration: underline;
+  text-decoration-color: var(--wu-error-dim);
+  text-underline-offset: 0.25em;
+}
+
+.code-viewport {
+  max-height: 55vh;
+  padding: 16px 18px;
+  border-radius: var(--wu-radius);
+  background: var(--wu-surface);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.code-track {
+  position: relative;
+  line-height: 1.65;
+}
+
+.code-line {
+  white-space: pre;
+  min-height: 1.65em;
+}
+
+/* --------------------------------------------------------------- characters */
+
+.char {
+  position: relative;
+}
+
+.char--pending,
+.char--skipped {
+  opacity: 0.45;
+}
+
+.char--correct {
+  opacity: 1;
+}
+
+.char--incorrect {
+  color: var(--wu-error);
+  opacity: 1;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+}
+
+/*
+ * Shows what you actually pressed above the character you missed — the mistake
+ * is much easier to learn from than a plain red letter.
+ */
+.char--incorrect[data-typed]:not([data-typed=""])::before {
+  content: attr(data-typed);
+  position: absolute;
+  left: 50%;
+  top: -0.62em;
+  transform: translateX(-50%);
+  color: var(--wu-error);
+  font-size: 0.5em;
+  line-height: 1;
+  opacity: 0.9;
+  pointer-events: none;
+  white-space: pre;
+}
+
+.char--extra {
+  color: var(--wu-error-dim);
+  opacity: 1;
+  text-decoration: line-through;
+}
+
+.char--missed {
+  color: var(--wu-error);
+  opacity: 0.55;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.2em;
+}
+
+.char--newline {
+  color: var(--wu-faint);
+}
+
+.char--tail {
+  display: inline-block;
+  width: 0;
+}
+
+/* -------------------------------------------------------------------- caret */
+
+.caret {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--wu-caret);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.caret--line {
+  width: 2px;
+  border-radius: 2px;
+}
+
+.caret--block {
+  opacity: 0.35;
+  border-radius: 2px;
+}
+
+.caret--underline {
+  border-radius: 2px;
+}
+
+.caret--underline::after {
+  content: "";
+}
+
+.caret--smooth {
+  transition: transform 90ms ease-out;
+}
+
+.caret--blink {
+  animation: caret-blink 1.05s steps(1, end) infinite;
+}
+
+@keyframes caret-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret--smooth,
+  .words-track {
+    transition: none;
+  }
+  .caret--blink {
+    animation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ results */
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.results__headline {
+  display: flex;
+  align-items: flex-end;
+  gap: 36px;
+}
+
+.results__hero {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.results__hero-value {
+  color: var(--wu-accent);
+  font-size: 3.4rem;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.results__hero--secondary .results__hero-value {
+  color: var(--wu-text);
+  font-size: 2rem;
+}
+
+.results__hero-label {
+  color: var(--wu-muted);
+}
+
+.badge {
+  align-self: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--wu-accent) 22%, transparent);
+  color: var(--wu-accent);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.results__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  margin: 0;
+}
+
+.stat dt {
+  color: var(--wu-muted);
+  font-size: 0.85em;
+}
+
+.stat dd {
+  margin: 2px 0 0;
+  font-size: 1.25em;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat__hint {
+  margin: 2px 0 0;
+  color: var(--wu-faint);
+  font-size: 0.75em;
+}
+
+.results__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.button {
+  padding: 6px 16px;
+  border: 1px solid var(--wu-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--wu-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: color-mix(in srgb, var(--wu-text) 8%, transparent);
+}
+
+.button--primary {
+  border-color: transparent;
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+}
+
+.button--primary:hover {
+  background: var(--vscode-button-hoverBackground, var(--vscode-button-background));
+}
+
+.button--quiet {
+  border-color: transparent;
+  color: var(--wu-muted);
+}
+
+/* The shared chart reads these; map them onto the editor's own chart colours. */
+:root {
+  --wu-chart-line: var(--vscode-charts-lines, var(--wu-border));
+  --wu-chart-raw: var(--vscode-charts-foreground, var(--wu-muted));
+  --wu-chart-surface: var(--vscode-editorHoverWidget-background, var(--vscode-editor-background));
+}
+
+/* ------------------------------------------------------------------ history */
+
+.history {
+  border-top: 1px solid var(--wu-border);
+  padding-top: 12px;
+}
+
+.history__summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--wu-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.history__chevron {
+  margin-left: auto;
+}
+
+.history__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.history__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+
+.history__table caption {
+  padding-bottom: 6px;
+  color: var(--wu-muted);
+  text-align: left;
+}
+
+.history__table th,
+.history__table td {
+  padding: 5px 10px 5px 0;
+  text-align: left;
+  font-weight: 400;
+  border-bottom: 1px solid var(--wu-border);
+}
+
+.history__table thead th {
+  color: var(--wu-muted);
+  font-size: 0.9em;
+}
+
+.history__table td {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------- prism token colors */
+
+.token.comment,
+.token.prolog,
+.token.cdata {
+  color: var(--vscode-charts-green, #6a9955);
+  font-style: italic;
+}
+
+.token.string,
+.token.char,
+.token.attr-value,
+.token.regex {
+  color: var(--vscode-charts-orange, #ce9178);
+}
+
+.token.keyword,
+.token.atrule,
+.token.important,
+.token.boolean {
+  color: var(--vscode-charts-purple, #c586c0);
+}
+
+.token.number,
+.token.constant,
+.token.symbol {
+  color: var(--vscode-charts-green, #b5cea8);
+}
+
+.token.function,
+.token.class-name,
+.token.builtin {
+  color: var(--vscode-charts-yellow, #dcdcaa);
+}
+
+.token.tag,
+.token.selector,
+.token.attr-name,
+.token.property {
+  color: var(--vscode-charts-blue, #569cd6);
+}
+
+.token.operator,
+.token.punctuation {
+  color: var(--wu-muted);
+}
+
+/* Typing state always wins over syntax colour. */
+.code-track .char--incorrect {
+  color: var(--wu-error);
+  background: color-mix(in srgb, var(--wu-error) 22%, transparent);
+  border-radius: 2px;
+}
+
+.code-track .char--missed {
+  color: var(--wu-error);
+}
+
+/* ---------------------------------------------------------------------- zen */
+
+.zen-viewport {
+  min-height: 8em;
+  font-family: var(--vscode-editor-font-family, monospace);
+}
+
+.zen-track {
+  position: relative;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.zen-placeholder {
+  color: var(--wu-faint);
+}
+
+.results__quote-source {
+  margin: -8px 0 0;
+  color: var(--wu-muted);
+  font-style: italic;
+}

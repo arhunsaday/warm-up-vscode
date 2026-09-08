@@ -1,0 +1,5 @@
+[
+  "fun foo(param: Int) {\n    val result = if (param == 1) {\n        \"one\"\n    } else if (param == 2) {\n        \"two\"\n    } else {\n        \"three\"\n    }\n}",
+  "class Turtle {\n    fun penDown()\n    fun penUp()\n    fun turn(degrees: Double)\n    fun forward(pixels: Double)\n}\n\nval myTurtle = Turtle()\nwith(myTurtle) { //draw a 100 pix square\n    penDown()\n    for(i in 1..4) {\n        forward(100.0)\n        turn(90.0)\n    }\n    penUp()\n}",
+  "class MyView : View() {\n    private val persons = FXCollections.observableArrayList<Person>(\n            Person(1, \"Samantha Stuart\", LocalDate.of(1981,12,4)),\n            Person(2, \"Tom Marks\", LocalDate.of(2001,1,23)),\n            Person(3, \"Stuart Gills\", LocalDate.of(1989,5,23)),\n            Person(3, \"Nicole Williams\", LocalDate.of(1998,8,11))\n    )\n\n    override val root = vbox {\n        tableview(persons) {\n            column(\"ID\", Person::id)\n            column(\"Name\", Person::name)\n            column(\"Birthday\", Person::birthday)\n            column(\"Age\", Person::age)\n            columnResizePolicy = SmartResize.POLICY\n        }\n    }\n}"
+]

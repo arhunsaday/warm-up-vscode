@@ -1,21 +1,42 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es2019",
-    "lib": [
-      "ES2019",
-      "DOM"
-    ],
-    "outDir": "out",
-    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@core/*": ["core/*"],
+      "@ui/*": ["ui/*"],
+      "@shared/*": ["shared/*"]
+    },
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": false,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "esModuleInterop": true,
     "strict": true,
-    "strictNullChecks": false,
-    "rootDir": "src",
-    "experimentalDecorators": true,
-    "noImplicitAny": false
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["node", "vscode", "mocha"]
   },
-  "exclude": [
-    "node_modules",
-    ".vscode-test"
-  ]
+  "include": [
+    "src",
+    "core",
+    "ui",
+    "shared",
+    "webview/src",
+    "website/src",
+    "scripts",
+    "*.config.ts",
+    ".vscode-test.mjs"
+  ],
+  "exclude": ["node_modules", "dist", ".vscode-test"]
 }
