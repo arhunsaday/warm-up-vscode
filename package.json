@@ -429,7 +429,7 @@
     "@biomejs/biome": "^1.9.4",
     "@types/canvas-confetti": "^1.9.0",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^22.10.5",
+    "@types/node": "^26.4.1",
     "@types/prismjs": "^1.26.6",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
