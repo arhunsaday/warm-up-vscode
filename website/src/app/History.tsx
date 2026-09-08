@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
 import { languageLabel } from "@core/data";
+import { useMemo, useState } from "react";
 import type { RunResult } from "../typing/useTypingRun";
 import { runKey } from "./useResults";
 

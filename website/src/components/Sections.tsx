@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MARKETPLACE, OPEN_VSX, REPO } from "./Chrome";
+import { MARKETPLACE, REPO } from "./Chrome";
 import { SectionHeading } from "./Playground";
 
 const MODES = [
@@ -64,7 +64,7 @@ export function Modes() {
 
   return (
     <section className="section" id="modes">
-      <SectionHeading index="02" title="Five ways to warm up" />
+      <SectionHeading title="Five ways to warm up" />
 
       <ul className="modes">
         {MODES.map((mode, index) => (
@@ -92,7 +92,7 @@ export function Modes() {
 export function Features() {
   return (
     <section className="section" id="features">
-      <SectionHeading index="03" title="What you get" />
+      <SectionHeading title="What you get" />
       <div className="features">
         {FEATURES.map((feature) => (
           <SpotlightCard key={feature.title}>
@@ -130,7 +130,7 @@ export function Install() {
 
   return (
     <section className="section section--install" id="install">
-      <SectionHeading index="04" title="Get it" />
+      <SectionHeading title="Get it" />
 
       <div className="terminal">
         <div className="terminal__bar">

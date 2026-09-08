@@ -1,9 +1,9 @@
 import confetti from "canvas-confetti";
 import { useEffect, useRef, useState } from "react";
+import { type AppSettings, DEFAULT_APP_SETTINGS } from "../app/settings";
 import { TypingInput, WordsSurface } from "../typing/Surface";
 import { useReportStatus } from "../typing/status";
 import { useTypingRun } from "../typing/useTypingRun";
-import { type AppSettings, DEFAULT_APP_SETTINGS } from "../app/settings";
 
 const HERO_WORDS = "Warm up before you code".split(" ");
 

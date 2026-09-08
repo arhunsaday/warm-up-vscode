@@ -1,5 +1,5 @@
-import { StatusBar, TitleBar } from "./components/Chrome";
 import { Link } from "react-router";
+import { StatusBar, TitleBar } from "./components/Chrome";
 import { HeroTest } from "./components/HeroTest";
 import { Playground } from "./components/Playground";
 import { Features, Footer, Install, Modes } from "./components/Sections";

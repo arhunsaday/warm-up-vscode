@@ -538,7 +538,6 @@ html.is-light .app {
   }
 }
 
-
 /* --------------------------------------------- theming the shared UI pieces */
 
 /* The landing page's palette variables are global; inside the app the theme wins. */
@@ -601,20 +600,12 @@ html.is-light .app {
 
 .app .keyboard__key--used {
   border-color: transparent;
-  background: color-mix(
-    in srgb,
-    var(--accent) calc((12 + var(--weight) * 50) * 1%),
-    transparent
-  );
+  background: color-mix(in srgb, var(--accent) calc((12 + var(--weight) * 50) * 1%), transparent);
   color: var(--ink);
 }
 
 .app .keyboard__key--missed {
   border-color: transparent;
-  background: color-mix(
-    in srgb,
-    var(--error) calc((18 + var(--weight) * 55) * 1%),
-    transparent
-  );
+  background: color-mix(in srgb, var(--error) calc((18 + var(--weight) * 55) * 1%), transparent);
   color: var(--ink);
 }

@@ -1,6 +1,6 @@
-import { WpmChart } from "@ui/WpmChart";
 import { languageLabel } from "@core/data";
 import type { Sample } from "@core/engine/stats";
+import { WpmChart } from "@ui/WpmChart";
 import { Keyboard } from "../components/Keyboard";
 import type { KeyStat, RunResult } from "../typing/useTypingRun";
 

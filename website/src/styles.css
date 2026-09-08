@@ -508,13 +508,6 @@ a {
   letter-spacing: -0.02em;
 }
 
-.section__index {
-  color: var(--amber);
-  font-family: var(--mono);
-  font-size: 0.85rem;
-  font-weight: 400;
-}
-
 .section__lead {
   margin: 0 0 2rem;
   max-width: 42rem;

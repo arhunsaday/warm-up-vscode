@@ -1,5 +1,3 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { type SpeedUnit, type WarmUpSettings, speedUnitFor } from "@shared/settings";
 import {
   backspace as codeBackspace,
   tab as codeTab,
@@ -28,6 +26,8 @@ import {
   zenWordCount,
 } from "@core/engine/zen";
 import { sounds } from "@core/sound";
+import { type SpeedUnit, type WarmUpSettings, speedUnitFor } from "@shared/settings";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 /**
  * Speed is characters over time, so the first keystroke of a run divides by a
@@ -249,7 +249,8 @@ export function useTypingRun({ settings, fixedWords, onFinished }: RunOptions): 
         done = step.state.finished;
       } else if (current.words) {
         const active = current.words.words[current.words.active] ?? "";
-        expected = char === " " ? " " : active[(current.words.typed[current.words.active] ?? "").length];
+        expected =
+          char === " " ? " " : active[(current.words.typed[current.words.active] ?? "").length];
         const step = wordsTypeChar(current.words, char, options);
         let words = step.state;
         if (mode === "time" && needsMoreWords(words)) {

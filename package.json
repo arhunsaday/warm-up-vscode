@@ -20,10 +20,7 @@
     "node": ">=20"
   },
   "packageManager": "pnpm@9.15.4",
-  "categories": [
-    "Other",
-    "Education"
-  ],
+  "categories": ["Other", "Education"],
   "keywords": [
     "typing",
     "typing test",
@@ -38,23 +35,14 @@
     "theme": "dark"
   },
   "main": "./dist/extension.cjs",
-  "activationEvents": [
-    "onStartupFinished",
-    "onWebviewPanel:warmUp"
-  ],
+  "activationEvents": ["onStartupFinished", "onWebviewPanel:warmUp"],
   "contributes": {
     "configuration": {
       "title": "Warm Up",
       "properties": {
         "warmUp.mode": {
           "type": "string",
-          "enum": [
-            "words",
-            "time",
-            "quotes",
-            "code",
-            "zen"
-          ],
+          "enum": ["words", "time", "quotes", "code", "zen"],
           "enumDescriptions": [
             "Type a fixed number of words.",
             "Type as many words as you can before the clock runs out.",
@@ -68,17 +56,7 @@
         },
         "warmUp.count": {
           "type": "number",
-          "enum": [
-            10,
-            15,
-            25,
-            30,
-            50,
-            60,
-            100,
-            120,
-            240
-          ],
+          "enum": [10, 15, 25, 30, 50, 60, 100, 120, 240],
           "default": 25,
           "description": "Number of words (words mode) or seconds on the clock (time mode).",
           "scope": "application"
@@ -139,11 +117,7 @@
         },
         "warmUp.stopOnError": {
           "type": "string",
-          "enum": [
-            "off",
-            "letter",
-            "word"
-          ],
+          "enum": ["off", "letter", "word"],
           "enumDescriptions": [
             "Never block: mistakes are recorded and you keep going.",
             "Block until the mistyped letter is corrected.",
@@ -155,12 +129,7 @@
         },
         "warmUp.sound": {
           "type": "string",
-          "enum": [
-            "off",
-            "click",
-            "typewriter",
-            "beep"
-          ],
+          "enum": ["off", "click", "typewriter", "beep"],
           "default": "off",
           "description": "Sound played on each keypress.",
           "scope": "application"
@@ -181,12 +150,7 @@
         },
         "warmUp.caretStyle": {
           "type": "string",
-          "enum": [
-            "line",
-            "block",
-            "underline",
-            "off"
-          ],
+          "enum": ["line", "block", "underline", "off"],
           "default": "line",
           "description": "Shape of the typing caret.",
           "scope": "application"
@@ -219,23 +183,14 @@
         },
         "warmUp.quickRestart": {
           "type": "string",
-          "enum": [
-            "esc",
-            "tab",
-            "off"
-          ],
+          "enum": ["esc", "tab", "off"],
           "default": "esc",
           "description": "Key that restarts the test instantly. Hold Shift to keep the same text.",
           "scope": "application"
         },
         "warmUp.quoteLength": {
           "type": "string",
-          "enum": [
-            "short",
-            "medium",
-            "long",
-            "any"
-          ],
+          "enum": ["short", "medium", "long", "any"],
           "default": "medium",
           "description": "How long a quote to practise with in quotes mode.",
           "scope": "application"

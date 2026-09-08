@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import { DEFAULT_APP_SETTINGS } from "../app/settings";
 import { CodeSurface, TypingInput, WordsSurface } from "../typing/Surface";
 import { useReportStatus } from "../typing/status";
 import { useTypingRun } from "../typing/useTypingRun";
-import { DEFAULT_APP_SETTINGS } from "../app/settings";
 import { Keyboard } from "./Keyboard";
 
 const BASE = { ...DEFAULT_APP_SETTINGS, sound: "off" as const };
@@ -37,7 +37,7 @@ export function Playground() {
 
   return (
     <section className="section" id="try">
-      <SectionHeading index="01" title="Try the real thing" />
+      <SectionHeading title="Try the real thing" />
       <p className="section__lead">Not a recording. This runs the extension's engine.</p>
 
       <div className={`pane${focused ? " pane--live" : ""}`}>
@@ -77,7 +77,11 @@ export function Playground() {
                 <p className="pane__results-caption">keys you missed</p>
                 <Keyboard stats={run.keyStats} />
               </div>
-              <button type="button" className="button button--primary" onClick={() => run.restart()}>
+              <button
+                type="button"
+                className="button button--primary"
+                onClick={() => run.restart()}
+              >
                 go again
               </button>
             </div>
@@ -127,11 +131,6 @@ function Figure({ value, label, big }: { value: number | string; label: string; 
   );
 }
 
-export function SectionHeading({ index, title }: { index: string; title: string }) {
-  return (
-    <h2 className="section__title">
-      {/* <span className="section__index">{index}</span> */}
-      {title}
-    </h2>
-  );
+export function SectionHeading({ title }: { title: string }) {
+  return <h2 className="section__title">{title}</h2>;
 }

@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
 import { SETTING_DEFINITIONS, type SettingDefinition } from "@shared/settings";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { THEMES } from "./settings";
 import type { AppSettings } from "./settings";
 
@@ -23,7 +23,13 @@ interface PaletteProps {
  * ⌘K opens every setting in one searchable list, which suits a product that
  * lives in VS Code better than a drawer full of toggles does.
  */
-export function CommandPalette({ open, settings, onChange, onClose, onClearHistory }: PaletteProps) {
+export function CommandPalette({
+  open,
+  settings,
+  onChange,
+  onClose,
+  onClearHistory,
+}: PaletteProps) {
   const [query, setQuery] = useState("");
   const [cursor, setCursor] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);

@@ -1,3 +1,4 @@
+import { languageLabel } from "@core/data";
 import {
   NATURAL_LANGUAGES,
   PROGRAMMING_LANGUAGES,
@@ -6,7 +7,6 @@ import {
   TYPING_MODES,
   WORD_COUNTS,
 } from "@shared/settings";
-import { languageLabel } from "@core/data";
 import type { AppSettings } from "./settings";
 
 interface ToolbarProps {
