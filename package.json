@@ -426,7 +426,7 @@
     "dev:website": "vite dev --config website/vite.config.ts"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "^2.5.12",
     "@types/canvas-confetti": "^1.9.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.10.5",
