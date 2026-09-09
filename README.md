@@ -1,11 +1,6 @@
 # Warm Up — Typing Test
 
-[![Version](https://img.shields.io/visual-studio-marketplace/v/jeusto.warm-up-typing-test.svg)](https://marketplace.visualstudio.com/items?itemName=Jeusto.warm-up-typing-test)
-[![Downloads](https://img.shields.io/vscode-marketplace/d/jeusto.warm-up-typing-test.svg)](https://marketplace.visualstudio.com/items?itemName=Jeusto.warm-up-typing-test)
-[![Rating](https://img.shields.io/visual-studio-marketplace/stars/jeusto.warm-up-typing-test.svg)](https://marketplace.visualstudio.com/items?itemName=Jeusto.warm-up-typing-test)
-[![CI](https://github.com/Jeusto/warm-up-vscode/actions/workflows/ci.yml/badge.svg)](https://github.com/Jeusto/warm-up-vscode/actions/workflows/ci.yml)
-
-🔥 Practice and improve your typing speed without leaving your editor. Plain words,
+Practice and improve your typing speed without leaving your editor. Plain words,
 a race against the clock, or real code — with live WPM, a results breakdown and
 personal bests, in a panel that picks up your VS Code theme.
 

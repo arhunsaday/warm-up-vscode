@@ -1,20 +1,20 @@
 {
   "name": "warm-up-typing-test",
-  "displayName": "Warm Up — Typing Test",
+  "displayName": "Warm Up \u2014 Typing Test",
   "publisher": "Jeusto",
-  "description": "🔥 Practice and improve your typing speed without leaving VS Code. Words, timed runs and real code snippets, with live WPM, sounds and personal bests.",
-  "version": "2.0.0",
+  "description": "\ud83d\udd25 Practice and improve your typing speed without leaving VS Code. Words, timed runs and real code snippets, with live WPM, sounds and personal bests.",
+  "version": "3.0.0",
   "license": "GPL-3.0-or-later",
   "type": "module",
   "icon": "assets/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Jeusto/warm-up-vscode.git"
+    "url": "https://github.com/arhunsaday/warmup.git"
   },
   "bugs": {
-    "url": "https://github.com/Jeusto/warm-up-vscode/issues"
+    "url": "https://github.com/arhunsaday/warmup/issues"
   },
-  "homepage": "https://github.com/Jeusto/warm-up-vscode#readme",
+  "homepage": "https://warmup.arhun.fr",
   "engines": {
     "vscode": "^1.90.0",
     "node": ">=20"
