@@ -4,7 +4,7 @@ import { useTypingStatus } from "../typing/status";
 export const MARKETPLACE =
   "https://marketplace.visualstudio.com/items?itemName=Jeusto.warm-up-typing-test";
 export const OPEN_VSX = "https://open-vsx.org/extension/Jeusto/warm-up-typing-test";
-export const REPO = "https://github.com/Jeusto/warm-up-vscode";
+export const REPO = "https://github.com/arhunsaday/warmup";
 
 /**
  * The page wears the product's clothes: a title bar at the top and a live

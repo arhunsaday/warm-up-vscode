@@ -17,6 +17,11 @@ jobs:
   release:
     name: Build, publish and release
     runs-on: ubuntu-latest
+    # Job level, not step level: `if:` conditions can only read the job's env,
+    # so a step-level mapping would leave these empty and skip publishing.
+    env:
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      OVSX_PAT: ${{ secrets.OVSX_PAT }}
     steps:
       - uses: actions/checkout@v4
 
@@ -57,14 +62,10 @@ jobs:
 
       - name: Publish to the VS Marketplace
         if: startsWith(github.ref, 'refs/tags/v') && env.VSCE_PAT != ''
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
         run: pnpm exec vsce publish --no-dependencies --packagePath warm-up-typing-test.vsix
 
       - name: Publish to Open VSX
         if: startsWith(github.ref, 'refs/tags/v') && env.OVSX_PAT != ''
-        env:
-          OVSX_PAT: ${{ secrets.OVSX_PAT }}
         run: pnpm exec ovsx publish warm-up-typing-test.vsix --pat "$OVSX_PAT"
 
       - name: Create the GitHub release
