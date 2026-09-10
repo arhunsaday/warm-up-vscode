@@ -439,7 +439,7 @@
     "@vscode/test-electron": "^3.1.0",
     "@vscode/vsce": "^3.2.1",
     "canvas-confetti": "^1.9.4",
-    "concurrently": "^9.1.2",
+    "concurrently": "^10.0.5",
     "ovsx": "^0.10.1",
     "prismjs": "^1.29.0",
     "react": "^19.0.0",
