@@ -440,7 +440,7 @@
     "@vscode/vsce": "^3.2.1",
     "canvas-confetti": "^1.9.4",
     "concurrently": "^9.1.2",
-    "ovsx": "^0.10.1",
+    "ovsx": "^1.1.1",
     "prismjs": "^1.29.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
