@@ -2,7 +2,9 @@
 
 Practice and improve your typing speed without leaving your editor. Plain words,
 a race against the clock, or real code — with live WPM, a results breakdown and
-personal bests, in a panel that picks up your VS Code theme.
+personal bests.
+
+![Screenshot](assets/screenshot.png)
 
 ## Install
 
